@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>NCAA Tournament Snake Draft 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#e8e6e3;font-family:'Bebas Neue','Oswald',sans-serif;min-height:100vh}
+.grain{position:fixed;inset:0;opacity:.03;pointer-events:none;z-index:100;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+header{background:linear-gradient(135deg,#0d0d14,#1a1a2e);border-bottom:3px solid #e94560;padding:20px 24px;position:relative}
+header .bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e94560,#ffd166,#52b788,#48cae4)}
+header .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.tag{font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#e94560;letter-spacing:4px;text-transform:uppercase}
+h1{font-size:clamp(24px,4vw,42px);letter-spacing:3px;background:linear-gradient(90deg,#fff 60%,#e94560);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.btn{padding:8px 16px;border:1px solid #333;background:transparent;color:#777;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase}
+.btn.active{border-color:#e94560;background:#e94560;color:#fff}
+.btn.danger{color:#e94560;border-color:#e9456044}
+main{max-width:1200px;margin:0 auto;padding:24px 16px}
+.live{display:flex;align-items:center;gap:6px;margin-right:12px;font-family:'Barlow',sans-serif;font-size:11px;color:#52b788}
+.dot{width:6px;height:6px;border-radius:50%;background:#52b788;box-shadow:0 0 8px #52b788;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+textarea{width:100%;background:#111;border:1px solid #333;color:#e8e6e3;padding:16px;font-family:'Barlow',sans-serif;font-size:16px;resize:vertical;outline:none;box-sizing:border-box}
+.card{cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-2px)}
+table{width:100%;border-collapse:collapse;font-family:'Barlow',sans-serif}
+th{padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;border-bottom:2px solid rgba(255,255,255,.1);text-align:center;white-space:nowrap}
+td{padding:8px 12px;font-size:13px}
+.team-btn{padding:12px;background:#111;cursor:pointer;text-align:left;transition:all .15s;border:1px solid rgba(255,255,255,.1)}
+.team-btn:hover{background:#1a1a1a}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:#1a1a2e;border:1px solid #e94560;padding:32px;max-width:400px;text-align:center}
+.region-btn{padding:6px 14px;border:1px solid #333;background:transparent;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer}
+.result-btn{width:28px;height:24px;border:1px solid #333;background:transparent;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
+footer{border-top:1px solid rgba(255,255,255,.06);padding:20px 24px;text-align:center;font-family:'Barlow',sans-serif;font-size:12px;color:#333}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+
+<script>
+// ═══ Firebase Setup ═══
+firebase.initializeApp({
+  apiKey: "AIzaSyA_P6wBvkgcrsrs5Z5KCvi27YryFeMBdbw",
+  authDomain: "ncaa-draft-2026-a8aa7.firebaseapp.com",
+  databaseURL: "https://ncaa-draft-2026-a8aa7-default-rtdb.firebaseio.com",
+  projectId: "ncaa-draft-2026-a8aa7",
+  storageBucket: "ncaa-draft-2026-a8aa7.firebasestorage.app",
+  messagingSenderId: "582803729241",
+  appId: "1:582803729241:web:fa5fc0eecb62c7e83ffa48"
+});
+const db = firebase.database();
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+const BRACKET = {
+  East: [
+    {seed:1,name:"Duke"},{seed:16,name:"Siena"},{seed:8,name:"Ohio State"},{seed:9,name:"TCU"},
+    {seed:5,name:"St. John's"},{seed:12,name:"Northern Iowa"},{seed:4,name:"Kansas"},{seed:13,name:"Cal Baptist"},
+    {seed:6,name:"Louisville"},{seed:11,name:"South Florida"},{seed:3,name:"Michigan State"},{seed:14,name:"North Dakota State"},
+    {seed:7,name:"UCLA"},{seed:10,name:"UCF"},{seed:2,name:"UConn"},{seed:15,name:"Furman"},
+  ],
+  West: [
+    {seed:1,name:"Arizona"},{seed:16,name:"LIU"},{seed:8,name:"Villanova"},{seed:9,name:"Utah State"},
+    {seed:5,name:"Wisconsin"},{seed:12,name:"High Point"},{seed:4,name:"Arkansas"},{seed:13,name:"Hawai'i"},
+    {seed:6,name:"BYU"},{seed:11,name:"SMU"},{seed:3,name:"Gonzaga"},{seed:14,name:"Kennesaw State"},
+    {seed:7,name:"Miami (FL)"},{seed:10,name:"Missouri"},{seed:2,name:"Purdue"},{seed:15,name:"Queens"},
+  ],
+  Midwest: [
+    {seed:1,name:"Michigan"},{seed:16,name:"Howard"},{seed:8,name:"Georgia"},{seed:9,name:"Saint Louis"},
+    {seed:5,name:"Vanderbilt"},{seed:12,name:"McNeese"},{seed:4,name:"Alabama"},{seed:13,name:"Hofstra"},
+    {seed:6,name:"Tennessee"},{seed:11,name:"Texas"},{seed:3,name:"Virginia"},{seed:14,name:"Wright State"},
+    {seed:7,name:"Kentucky"},{seed:10,name:"Santa Clara"},{seed:2,name:"Iowa State"},{seed:15,name:"Tennessee State"},
+  ],
+  South: [
+    {seed:1,name:"Florida"},{seed:16,name:"Lehigh"},{seed:8,name:"Clemson"},{seed:9,name:"Iowa"},
+    {seed:5,name:"Texas Tech"},{seed:12,name:"Akron"},{seed:4,name:"Nebraska"},{seed:13,name:"Troy"},
+    {seed:6,name:"North Carolina"},{seed:11,name:"VCU"},{seed:3,name:"Illinois"},{seed:14,name:"Penn"},
+    {seed:7,name:"Saint Mary's"},{seed:10,name:"Texas A&M"},{seed:2,name:"Houston"},{seed:15,name:"Idaho"},
+  ],
+};
+
+const ALL_TEAMS = Object.entries(BRACKET).flatMap(([region, teams]) => teams.map(t => ({...t, region})));
+const ROUNDS = ["R64","R32","Sweet 16","Elite 8","Final 4","Championship"];
+const ROUND_POINTS = [1,2,4,8,16,32];
+const REGION_COLORS = {East:"#e94560",West:"#48cae4",Midwest:"#ffd166",South:"#52b788"};
+const PLAYER_PALETTE = [
+  {bg:"#1a1a2e",accent:"#e94560"},{bg:"#0d1b2a",accent:"#48cae4"},
+  {bg:"#1b2e1a",accent:"#52b788"},{bg:"#2e1a1a",accent:"#f4845f"},
+  {bg:"#2e2a1a",accent:"#ffd166"},{bg:"#1a1a2e",accent:"#7b68ee"},
+  {bg:"#2e1a2a",accent:"#e07aff"},{bg:"#1a2e2e",accent:"#00bfa5"},
+  {bg:"#2e2020",accent:"#ff6b9d"},{bg:"#1a2020",accent:"#20c997"},
+];
+
+function App() {
+  const [phase, setPhase] = useState("loading");
+  const [players, setPlayers] = useState([]);
+  const [draftPicks, setDraftPicks] = useState([]);
+  const [results, setResults] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [view, setView] = useState("standings");
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [filterRegion, setFilterRegion] = useState("All");
+  const [setupNames, setSetupNames] = useState("John\nTony\nGriff\nRoss\nLito\nPat\nAndrew\nJordan");
+  const [shuffledOrder, setShuffledOrder] = useState(null);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+
+  useEffect(() => {
+    db.ref("draft").on("value", snap => {
+      const data = snap.val();
+      if (data) {
+        setPlayers(data.players || []);
+        setDraftPicks(data.picks || []);
+        if (data.players && data.players.length > 0) {
+          setPhase(data.picks && data.picks.length >= ALL_TEAMS.length ? "tracker" : "draft");
+        } else { setPhase("setup"); }
+      } else { setPhase("setup"); }
+    });
+    db.ref("results").on("value", snap => {
+      if (snap.val()) setResults(snap.val());
+    });
+    return () => { db.ref("draft").off(); db.ref("results").off(); };
+  }, []);
+
+  function getPickPlayer(pickNum, playerList) {
+    const n = playerList.length;
+    const round = Math.floor(pickNum / n);
+    const pos = pickNum % n;
+    return playerList[round % 2 === 0 ? pos : n - 1 - pos];
+  }
+
+  function handleDraftPick(teamName) {
+    const player = getPickPlayer(draftPicks.length, players);
+    db.ref("draft").set({ players, picks: [...draftPicks, {pick: draftPicks.length+1, player, team: teamName}] });
+  }
+
+  function undoLastPick() {
+    if (draftPicks.length > 0) db.ref("draft").set({ players, picks: draftPicks.slice(0,-1) });
+  }
+
+  function handleResult(team, ri, val) {
+    const arr = [...(results[team]||[])];
+    arr[ri] = val;
+    if (val==="N") for(let i=ri+1;i<6;i++) arr[i]=null;
+    const nr = {...results, [team]: arr};
+    setResults(nr);
+    db.ref("results").set(nr);
+  }
+
+  function getTeamPoints(team) {
+    return (results[team]||[]).reduce((s,v,i) => v==="Y" ? s+ROUND_POINTS[i] : s, 0);
+  }
+
+  function getPlayerData(name) {
+    const teams = draftPicks.filter(p => p.player === name);
+    let totalPts=0,totalWins=0,alive=0,bestRound=-1,bestTeam=null;
+    teams.forEach(({team}) => {
+      const r = results[team]||[];
+      r.forEach((v,i) => { if(v==="Y"){totalPts+=ROUND_POINTS[i];totalWins++;} });
+      const lw = r.lastIndexOf("Y");
+      if(lw>bestRound){bestRound=lw;bestTeam=team;}
+      if(!r.includes("N")&&r.filter(v=>v==="Y").length<6) alive++;
+    });
+    return {teams,totalPts,totalWins,alive,bestRound,bestTeam};
+  }
+
+  const standings = useMemo(() => {
+    if(!players.length) return [];
+    return players.map((name,i) => ({name,color:PLAYER_PALETTE[i%PLAYER_PALETTE.length],...getPlayerData(name)}))
+      .sort((a,b) => b.totalPts-a.totalPts || b.totalWins-a.totalWins);
+  }, [players,draftPicks,results]);
+
+  function handleReset() {
+    db.ref("draft").set(null);
+    db.ref("results").set(null);
+    setPlayers([]);setDraftPicks([]);setResults({});setPhase("setup");setConfirmReset(false);setSelectedPlayer(null);setShuffledOrder(null);
+  }
+
+  if (phase==="loading") return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12}}>
+      <div style={{color:"#e94560",fontFamily:"'Bebas Neue'",fontSize:24,letterSpacing:3}}>CONNECTING...</div>
+      <div style={{color:"#555",fontFamily:"'Barlow'",fontSize:13}}>Syncing with Firebase</div>
+    </div>
+  );
+
+  return (
+    <div>
+      <header>
+        <div className="bar"/>
+        <div className="inner">
+          <div>
+            <div className="tag">2026 NCAA Tournament</div>
+            <h1>SNAKE DRAFT TRACKER</h1>
+          </div>
+          <div className="nav">
+            <div className="live"><div className="dot"/>LIVE SYNC</div>
+            {phase==="draft" && <button className="btn" onClick={()=>setPhase("tracker")}>SKIP TO TRACKER</button>}
+            {phase==="tracker" && ["standings","results","draft board"].map(v =>
+              <button key={v} className={`btn ${view===v?"active":""}`} onClick={()=>{setView(v);setSelectedPlayer(null)}}>{v.toUpperCase()}</button>
+            )}
+            {phase!=="setup" && <button className="btn danger" onClick={()=>setConfirmReset(true)}>RESET</button>}
+          </div>
+        </div>
+      </header>
+
+      {confirmReset && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3 style={{fontFamily:"'Bebas Neue'",fontSize:28,color:"#e94560",letterSpacing:2,margin:"0 0 12px"}}>RESET EVERYTHING?</h3>
+            <p style={{fontFamily:"'Barlow'",fontSize:14,color:"#888",margin:"0 0 24px"}}>This erases the entire draft and all results for everyone.</p>
+            <div style={{display:"flex",gap:12,justifyContent:"center"}}>
+              <button className="btn" style={{background:"#e94560",color:"#fff",borderColor:"#e94560"}} onClick={handleReset}>YES, RESET</button>
+              <button className="btn" onClick={()=>setConfirmReset(false)}>CANCEL</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <main>
+        {/* SETUP */}
+        {phase==="setup" && (
+          <div style={{maxWidth:500,margin:"0 auto"}}>
+            <h2 style={{fontSize:36,letterSpacing:3,textAlign:"center",marginBottom:8}}>DRAFT SETUP</h2>
+            <p style={{fontFamily:"'Barlow'",fontSize:14,color:"#888",textAlign:"center",marginBottom:24}}>Enter player names, one per line. Randomize the order, then start drafting.</p>
+            <textarea value={setupNames} onChange={e=>{setSetupNames(e.target.value);setShuffledOrder(null)}} rows={10}/>
+            <div style={{fontFamily:"'Barlow'",fontSize:13,color:"#555",marginTop:8,marginBottom:20}}>
+              {setupNames.split("\n").filter(n=>n.trim()).length} players · {ALL_TEAMS.length} teams · {Math.ceil(ALL_TEAMS.length/Math.max(1,setupNames.split("\n").filter(n=>n.trim()).length))} rounds
+            </div>
+            <button className="btn" style={{width:"100%",padding:"14px 24px",border:"2px solid #ffd166",fontSize:22,fontFamily:"'Bebas Neue'",letterSpacing:3,color:"#ffd166",background:isShuffling?"#ffd16633":"transparent"}}
+              onClick={()=>{
+                const names=setupNames.split("\n").map(n=>n.trim()).filter(Boolean);
+                if(names.length<2)return;
+                setIsShuffling(true);setShuffledOrder(null);
+                let count=0;
+                const iv=setInterval(()=>{
+                  const s=[...names];
+                  for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}
+                  setShuffledOrder([...s]);count++;
+                  if(count>=12){clearInterval(iv);setIsShuffling(false);}
+                },80);
+              }}>{isShuffling?"SHUFFLING...":"🎲  RANDOMIZE ORDER"}</button>
+
+            {shuffledOrder && !isShuffling && (
+              <div style={{background:"rgba(255,215,102,0.04)",border:"1px solid #ffd16644",padding:16,margin:"12px 0"}}>
+                <div style={{fontFamily:"'Barlow Condensed'",fontSize:12,fontWeight:700,color:"#ffd166",letterSpacing:3,marginBottom:12}}>DRAFT ORDER</div>
+                {shuffledOrder.map((name,i) => {
+                  const c=PLAYER_PALETTE[i%PLAYER_PALETTE.length];
+                  return <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",marginBottom:4,background:c.bg,border:`1px solid ${c.accent}33`,animation:"fadeSlideIn .3s ease-out both",animationDelay:`${i*.05}s`}}>
+                    <div style={{width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",background:i===0?"#e94560":"rgba(255,255,255,.06)",fontFamily:"'Bebas Neue'",fontSize:16,color:"#fff",flexShrink:0}}>{i+1}</div>
+                    <span style={{fontFamily:"'Barlow'",fontSize:15,fontWeight:600,color:c.accent}}>{name}</span>
+                    {i===0 && <span style={{marginLeft:"auto",fontFamily:"'Barlow'",fontSize:10,color:"#e94560",padding:"2px 8px",border:"1px solid #e9456044",letterSpacing:1}}>1ST PICK</span>}
+                  </div>;
+                })}
+                <div style={{fontFamily:"'Barlow'",fontSize:12,color:"#666",marginTop:10}}>↩ Snake format: order reverses each round</div>
+              </div>
+            )}
+
+            <button className="btn" style={{width:"100%",padding:"14px 24px",fontSize:22,fontFamily:"'Bebas Neue'",letterSpacing:3,background:shuffledOrder&&!isShuffling?"#e94560":"#333",color:shuffledOrder&&!isShuffling?"#fff":"#666",border:"none"}}
+              onClick={()=>{if(shuffledOrder&&shuffledOrder.length>=2){db.ref("draft").set({players:shuffledOrder,picks:[]});setShuffledOrder(null);}}}
+            >START DRAFT</button>
+            {!shuffledOrder && <div style={{fontFamily:"'Barlow'",fontSize:12,color:"#555",textAlign:"center",marginTop:8}}>Randomize the order first to unlock the draft</div>}
+          </div>
+        )}
+
+        {/* DRAFT */}
+        {phase==="draft" && (()=>{
+          const drafted=new Set(draftPicks.map(p=>p.team));
+          const otc=getPickPlayer(draftPicks.length,players);
+          const cc=PLAYER_PALETTE[players.indexOf(otc)%PLAYER_PALETTE.length];
+          const avail=ALL_TEAMS.filter(t=>!drafted.has(t.name));
+          const filtered=avail.filter(t=>{
+            const ms=!searchTerm||t.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const mr=filterRegion==="All"||t.region===filterRegion;
+            return ms&&mr;
+          }).sort((a,b)=>a.seed-b.seed);
+          return <div>
+            <div style={{background:`linear-gradient(135deg,${cc.bg},#0a0a0f)`,border:`2px solid ${cc.accent}`,padding:"20px 24px",marginBottom:24,textAlign:"center"}}>
+              <div style={{fontFamily:"'Barlow Condensed'",fontSize:13,color:"#888",letterSpacing:3}}>PICK #{draftPicks.length+1} · ON THE CLOCK</div>
+              <div style={{fontSize:48,letterSpacing:4,color:cc.accent}}>{otc.toUpperCase()}</div>
+              <div style={{fontFamily:"'Barlow'",fontSize:13,color:"#666",marginTop:4}}>{avail.length} teams remaining · Round {Math.floor(draftPicks.length/players.length)+1}</div>
+            </div>
+            <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+              <input type="text" value={searchTerm} onChange={e=>setSearchTerm(e.target.value)} placeholder="Search teams..." style={{flex:1,minWidth:180,padding:"10px 14px",background:"#111",border:"1px solid #333",color:"#e8e6e3",fontFamily:"'Barlow'",fontSize:14,outline:"none"}}/>
+              {["All",...Object.keys(BRACKET)].map(r =>
+                <button key={r} className="region-btn" onClick={()=>setFilterRegion(r)} style={{borderColor:filterRegion===r?(REGION_COLORS[r]||"#888"):"#333",background:filterRegion===r?(REGION_COLORS[r]||"#888")+"22":"transparent",color:filterRegion===r?(REGION_COLORS[r]||"#fff"):"#666"}}>{r.toUpperCase()}</button>
+              )}
+              {draftPicks.length>0 && <button className="btn danger" onClick={undoLastPick}>UNDO</button>}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:6}}>
+              {filtered.map(t =>
+                <div key={t.name} className="team-btn" style={{borderColor:REGION_COLORS[t.region]+"33"}} onClick={()=>handleDraftPick(t.name)}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor=REGION_COLORS[t.region]}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=REGION_COLORS[t.region]+"33"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span style={{fontFamily:"'Barlow Condensed'",fontSize:15,fontWeight:700,color:"#e8e6e3"}}>{t.name}</span>
+                    <span style={{fontFamily:"'Bebas Neue'",fontSize:18,color:REGION_COLORS[t.region],opacity:.7}}>{t.seed}</span>
+                  </div>
+                  <div style={{fontFamily:"'Barlow'",fontSize:11,color:REGION_COLORS[t.region],marginTop:4,opacity:.8}}>{t.region}</div>
+                </div>
+              )}
+            </div>
+            {draftPicks.length>0 && <div style={{marginTop:24}}>
+              <h3 style={{fontSize:20,letterSpacing:2,color:"#888",marginBottom:12}}>RECENT PICKS</h3>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {draftPicks.slice(-12).reverse().map(p=>{
+                  const pc=PLAYER_PALETTE[players.indexOf(p.player)%PLAYER_PALETTE.length];
+                  const ti=ALL_TEAMS.find(t=>t.name===p.team);
+                  return <div key={p.pick} style={{padding:"6px 12px",background:pc.bg,border:`1px solid ${pc.accent}33`,fontFamily:"'Barlow'",fontSize:12}}>
+                    <span style={{color:"#666"}}>#{p.pick}</span>{" "}
+                    <span style={{color:pc.accent,fontWeight:600}}>{p.player}</span>{" "}
+                    <span style={{color:"#aaa"}}>{p.team}</span>
+                    {ti && <span style={{color:REGION_COLORS[ti.region],marginLeft:4,opacity:.6}}>({ti.seed})</span>}
+                  </div>;
+                })}
+              </div>
+            </div>}
+          </div>;
+        })()}
+
+        {/* STANDINGS */}
+        {phase==="tracker"&&view==="standings"&&!selectedPlayer && (
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:12,marginBottom:24}}>
+              {standings.map((p,i) =>
+                <div key={p.name} className="card" onClick={()=>setSelectedPlayer(p.name)} style={{background:`linear-gradient(135deg,${p.color.bg},#0a0a0f)`,border:`1px solid ${p.color.accent}33`}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor=p.color.accent}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor=p.color.accent+"33"}}>
+                  <div style={{position:"absolute",top:0,left:0,width:32,height:32,background:i===0?"#e94560":i===1?"#888":i===2?"#cd7f32":"rgba(255,255,255,.06)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Bebas Neue'",fontSize:18,color:"#fff"}}>{i+1}</div>
+                  <div style={{padding:"16px 16px 12px"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                      <div style={{fontSize:28,color:p.color.accent,letterSpacing:2}}>{p.name.toUpperCase()}</div>
+                      <div style={{textAlign:"right"}}><div style={{fontSize:36,fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:1}}>{p.totalPts}</div><div style={{fontSize:10,fontFamily:"'Barlow'",color:"#555",letterSpacing:1}}>PTS</div></div>
+                    </div>
+                    <div style={{display:"flex",gap:14,marginTop:8,fontFamily:"'Barlow'",fontSize:12,color:"#777"}}>
+                      <span><strong style={{color:"#ccc"}}>{p.totalWins}</strong> wins</span>
+                      <span><strong style={{color:p.alive>0?"#52b788":"#e94560"}}>{p.alive}</strong> alive</span>
+                      <span><strong style={{color:"#ccc"}}>{p.teams.length}</strong> teams</span>
+                    </div>
+                  </div>
+                  <div style={{height:2,background:`linear-gradient(90deg,${p.color.accent},transparent)`}}/>
+                </div>
+              )}
+            </div>
+            <div style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",padding:"12px 20px",display:"flex",flexWrap:"wrap",gap:14,alignItems:"center"}}>
+              <span style={{fontFamily:"'Barlow Condensed'",fontSize:12,color:"#555",letterSpacing:2}}>POINTS:</span>
+              {ROUNDS.map((r,i) => <span key={r} style={{fontFamily:"'Barlow'",fontSize:12,color:"#888"}}>{r} = <strong style={{color:"#e94560"}}>{ROUND_POINTS[i]}</strong></span>)}
+            </div>
+          </div>
+        )}
+
+        {/* PLAYER DETAIL */}
+        {phase==="tracker"&&view==="standings"&&selectedPlayer && (()=>{
+          const p=standings.find(s=>s.name===selectedPlayer);
+          if(!p)return null;
+          return <div>
+            <button className="btn" style={{marginBottom:20}} onClick={()=>setSelectedPlayer(null)}>← BACK</button>
+            <div style={{background:`linear-gradient(135deg,${p.color.bg},#0a0a0f)`,border:`1px solid ${p.color.accent}44`,padding:24,marginBottom:20,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
+              <h2 style={{fontSize:40,margin:0,color:p.color.accent,letterSpacing:4}}>{selectedPlayer.toUpperCase()}</h2>
+              <div style={{textAlign:"right"}}><div style={{fontSize:48,fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:1}}>{p.totalPts}</div><div style={{fontSize:12,fontFamily:"'Barlow'",color:"#555"}}>TOTAL POINTS</div></div>
+            </div>
+            <div style={{overflowX:"auto"}}><table>
+              <thead><tr><th style={{width:40}}>Pick</th><th style={{textAlign:"left"}}>Team</th><th style={{width:50}}>Seed</th><th style={{textAlign:"left"}}>Region</th>{ROUNDS.map(r=><th key={r}>{r}</th>)}<th>PTS</th></tr></thead>
+              <tbody>{p.teams.map(({pick,team})=>{
+                const info=ALL_TEAMS.find(t=>t.name===team);
+                const pts=getTeamPoints(team);
+                const r=results[team]||[];
+                return <tr key={pick} style={{borderBottom:"1px solid rgba(255,255,255,.04)"}}>
+                  <td style={{color:"#555",textAlign:"center"}}>{pick}</td>
+                  <td style={{fontWeight:600}}>{team}</td>
+                  <td style={{textAlign:"center",color:info?REGION_COLORS[info.region]:"#888"}}>{info?info.seed:""}</td>
+                  <td style={{color:info?REGION_COLORS[info.region]:"#888",fontSize:12}}>{info?info.region:""}</td>
+                  {ROUNDS.map((_,ri)=><td key={ri} style={{textAlign:"center"}}>{r[ri]==="Y"?<span style={{color:"#52b788",fontWeight:700}}>W</span>:r[ri]==="N"?<span style={{color:"#e94560",fontWeight:700}}>L</span>:<span style={{color:"#222"}}>—</span>}</td>)}
+                  <td style={{textAlign:"center",fontWeight:700,color:p.color.accent}}>{pts}</td>
+                </tr>;
+              })}</tbody>
+            </table></div>
+          </div>;
+        })()}
+
+        {/* RESULTS */}
+        {phase==="tracker"&&view==="results" && (
+          <div>
+            <h2 style={{fontSize:32,letterSpacing:3,marginBottom:4}}>UPDATE RESULTS</h2>
+            <p style={{fontFamily:"'Barlow'",fontSize:13,color:"#666",marginBottom:20}}>Click W or L per round. Updates sync to everyone in real time.</p>
+            <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+              {["All",...Object.keys(BRACKET)].map(r =>
+                <button key={r} className="region-btn" onClick={()=>setFilterRegion(r)} style={{borderColor:filterRegion===r?(REGION_COLORS[r]||"#888"):"#333",background:filterRegion===r?(REGION_COLORS[r]||"#888")+"22":"transparent",color:filterRegion===r?(REGION_COLORS[r]||"#fff"):"#555"}}>{r.toUpperCase()}</button>
+              )}
+            </div>
+            <div style={{overflowX:"auto"}}><table>
+              <thead><tr><th style={{textAlign:"left"}}>Team</th><th style={{width:60}}>Seed</th><th style={{textAlign:"left"}}>Owner</th>{ROUNDS.map(r=><th key={r} style={{width:80}}>{r}</th>)}</tr></thead>
+              <tbody>{ALL_TEAMS.filter(t=>filterRegion==="All"||t.region===filterRegion).sort((a,b)=>a.seed-b.seed).map(team=>{
+                const owner=draftPicks.find(p=>p.team===team.name);
+                const oi=owner?players.indexOf(owner.player):-1;
+                const oc=oi>=0?PLAYER_PALETTE[oi%PLAYER_PALETTE.length]:null;
+                const r=results[team.name]||[];
+                return <tr key={team.name} style={{borderBottom:"1px solid rgba(255,255,255,.04)"}}>
+                  <td style={{fontWeight:600}}><span style={{color:REGION_COLORS[team.region],marginRight:6,fontSize:10,opacity:.5}}>●</span>{team.name}</td>
+                  <td style={{textAlign:"center",color:REGION_COLORS[team.region]}}>{team.seed}</td>
+                  <td style={{color:oc?oc.accent:"#555",fontWeight:500,fontSize:12}}>{owner?owner.player:"—"}</td>
+                  {ROUNDS.map((_,ri)=>{
+                    const prevLoss=r.slice(0,ri).includes("N");
+                    const prevOk=ri===0||r.slice(0,ri).every(v=>v==="Y");
+                    const canEdit=!prevLoss&&prevOk;
+                    return <td key={ri} style={{textAlign:"center"}}>{canEdit?
+                      <div style={{display:"flex",gap:2,justifyContent:"center"}}>
+                        <button className="result-btn" onClick={()=>handleResult(team.name,ri,"Y")} style={{borderColor:r[ri]==="Y"?"#52b788":"#333",background:r[ri]==="Y"?"#52b78833":"transparent",color:r[ri]==="Y"?"#52b788":"#555"}}>W</button>
+                        <button className="result-btn" onClick={()=>handleResult(team.name,ri,"N")} style={{borderColor:r[ri]==="N"?"#e94560":"#333",background:r[ri]==="N"?"#e9456033":"transparent",color:r[ri]==="N"?"#e94560":"#555"}}>L</button>
+                      </div>
+                    :prevLoss?<span style={{color:"#222"}}>✕</span>:<span style={{color:"#222"}}>—</span>}</td>;
+                  })}
+                </tr>;
+              })}</tbody>
+            </table></div>
+          </div>
+        )}
+
+        {/* DRAFT BOARD */}
+        {phase==="tracker"&&view==="draft board" && (
+          <div>
+            <h2 style={{fontSize:32,letterSpacing:3,marginBottom:20}}>DRAFT BOARD</h2>
+            {Array.from({length:Math.ceil(draftPicks.length/players.length)},(_,rn)=>{
+              const picks=draftPicks.slice(rn*players.length,(rn+1)*players.length);
+              const snake=rn%2===1;
+              const disp=snake?[...picks].reverse():picks;
+              return <div key={rn} style={{marginBottom:4}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                  <span style={{fontFamily:"'Barlow Condensed'",fontSize:11,color:"#444",letterSpacing:2}}>RD {rn+1}</span>
+                  {snake && <span style={{fontSize:9,color:"#e94560",fontFamily:"'Barlow'",padding:"1px 5px",border:"1px solid #e9456033"}}>↩</span>}
+                  <div style={{flex:1,height:1,background:"rgba(255,255,255,.04)"}}/>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:4,marginBottom:12}}>
+                  {disp.map(p=>{
+                    const pi=players.indexOf(p.player);
+                    const pc=PLAYER_PALETTE[pi%PLAYER_PALETTE.length];
+                    const info=ALL_TEAMS.find(t=>t.name===p.team);
+                    const r=results[p.team]||[];
+                    const elim=r.includes("N");
+                    const alive=!elim&&r.filter(v=>v==="Y").length>0;
+                    return <div key={p.pick} style={{padding:"8px 10px",background:elim?"#0a0a0f":pc.bg,border:`1px solid ${alive?pc.accent+"66":"rgba(255,255,255,.04)"}`,opacity:elim?0.4:1,position:"relative"}}>
+                      <div style={{fontSize:9,fontFamily:"'Barlow'",color:"#444"}}>#{p.pick}</div>
+                      <div style={{fontSize:13,fontFamily:"'Barlow Condensed'",fontWeight:700,color:elim?"#444":"#e8e6e3",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.team}</div>
+                      <div style={{fontSize:10,fontFamily:"'Barlow'",color:pc.accent,marginTop:1}}>{p.player}</div>
+                      {info && <div style={{fontSize:9,color:REGION_COLORS[info.region],opacity:.5,fontFamily:"'Barlow'"}}>{info.region} {info.seed}</div>}
+                      {alive && <div style={{position:"absolute",top:4,right:4,width:5,height:5,borderRadius:"50%",background:"#52b788",boxShadow:"0 0 4px #52b788"}}/>}
+                    </div>;
+                  })}
+                </div>
+              </div>;
+            })}
+          </div>
+        )}
+      </main>
+      <footer>NCAA Tournament Snake Draft · {players.length>0?`${players.length} Players`:""} · 2026 · Real-Time Sync</footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
+</script>
+</body>
+</html>
