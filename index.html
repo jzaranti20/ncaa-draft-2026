@@ -60,9 +60,9 @@ const db=firebase.database();
 const ADMIN_CODE="MADNESS2026";
 const BRACKET={
   East:[{s:1,n:"Duke"},{s:16,n:"Siena"},{s:8,n:"Ohio State"},{s:9,n:"TCU"},{s:5,n:"St. John's"},{s:12,n:"Northern Iowa"},{s:4,n:"Kansas"},{s:13,n:"Cal Baptist"},{s:6,n:"Louisville"},{s:11,n:"South Florida"},{s:3,n:"Michigan State"},{s:14,n:"North Dakota St"},{s:7,n:"UCLA"},{s:10,n:"UCF"},{s:2,n:"UConn"},{s:15,n:"Furman"}],
-  West:[{s:1,n:"Arizona"},{s:16,n:"LIU"},{s:8,n:"Villanova"},{s:9,n:"Utah State"},{s:5,n:"Wisconsin"},{s:12,n:"High Point"},{s:4,n:"Arkansas"},{s:13,n:"Hawai'i"},{s:6,n:"BYU"},{s:11,n:"SMU"},{s:3,n:"Gonzaga"},{s:14,n:"Kennesaw State"},{s:7,n:"Miami (FL)"},{s:10,n:"Missouri"},{s:2,n:"Purdue"},{s:15,n:"Queens"}],
-  Midwest:[{s:1,n:"Michigan"},{s:16,n:"Howard"},{s:8,n:"Georgia"},{s:9,n:"Saint Louis"},{s:5,n:"Vanderbilt"},{s:12,n:"McNeese"},{s:4,n:"Alabama"},{s:13,n:"Hofstra"},{s:6,n:"Tennessee"},{s:11,n:"Texas"},{s:3,n:"Virginia"},{s:14,n:"Wright State"},{s:7,n:"Kentucky"},{s:10,n:"Santa Clara"},{s:2,n:"Iowa State"},{s:15,n:"Tennessee State"}],
-  South:[{s:1,n:"Florida"},{s:16,n:"Lehigh"},{s:8,n:"Clemson"},{s:9,n:"Iowa"},{s:5,n:"Texas Tech"},{s:12,n:"Akron"},{s:4,n:"Nebraska"},{s:13,n:"Troy"},{s:6,n:"North Carolina"},{s:11,n:"VCU"},{s:3,n:"Illinois"},{s:14,n:"Penn"},{s:7,n:"Saint Mary's"},{s:10,n:"Texas A&M"},{s:2,n:"Houston"},{s:15,n:"Idaho"}]
+  West:[{s:1,n:"Arizona"},{s:16,n:"LIU"},{s:8,n:"Villanova"},{s:9,n:"Utah State"},{s:5,n:"Wisconsin"},{s:12,n:"High Point"},{s:4,n:"Arkansas"},{s:13,n:"Hawai'i"},{s:6,n:"BYU"},{s:11,n:"Miami (OH) / SMU"},{s:3,n:"Gonzaga"},{s:14,n:"Kennesaw State"},{s:7,n:"Miami (FL)"},{s:10,n:"Missouri"},{s:2,n:"Purdue"},{s:15,n:"Queens"}],
+  Midwest:[{s:1,n:"Michigan"},{s:16,n:"Howard / UMBC"},{s:8,n:"Georgia"},{s:9,n:"Saint Louis"},{s:5,n:"Vanderbilt"},{s:12,n:"McNeese"},{s:4,n:"Alabama"},{s:13,n:"Hofstra"},{s:6,n:"Tennessee"},{s:11,n:"Texas / NC State"},{s:3,n:"Virginia"},{s:14,n:"Wright State"},{s:7,n:"Kentucky"},{s:10,n:"Santa Clara"},{s:2,n:"Iowa State"},{s:15,n:"Tennessee State"}],
+  South:[{s:1,n:"Florida"},{s:16,n:"PV A&M / Lehigh"},{s:8,n:"Clemson"},{s:9,n:"Iowa"},{s:5,n:"Texas Tech"},{s:12,n:"Akron"},{s:4,n:"Nebraska"},{s:13,n:"Troy"},{s:6,n:"North Carolina"},{s:11,n:"VCU"},{s:3,n:"Illinois"},{s:14,n:"Penn"},{s:7,n:"Saint Mary's"},{s:10,n:"Texas A&M"},{s:2,n:"Houston"},{s:15,n:"Idaho"}]
 };
 const T=[];for(const[r,ts]of Object.entries(BRACKET))for(const t of ts)T.push({seed:t.s,name:t.n,region:r});
 const RN=["R64","R32","Sweet 16","Elite 8","Final 4","Championship"],RP=[1,2,4,8,16,32];
