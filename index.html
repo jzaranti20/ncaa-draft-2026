@@ -3,473 +3,305 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#0a0a0f"/>
 <title>NCAA Tournament Snake Draft 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#0a0a0f;color:#e8e6e3;font-family:'Bebas Neue','Oswald',sans-serif;min-height:100vh}
-.grain{position:fixed;inset:0;opacity:.03;pointer-events:none;z-index:100;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-header{background:linear-gradient(135deg,#0d0d14,#1a1a2e);border-bottom:3px solid #e94560;padding:20px 24px;position:relative}
-header .bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e94560,#ffd166,#52b788,#48cae4)}
-header .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.tag{font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#e94560;letter-spacing:4px;text-transform:uppercase}
-h1{font-size:clamp(24px,4vw,42px);letter-spacing:3px;background:linear-gradient(90deg,#fff 60%,#e94560);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
-.btn{padding:8px 16px;border:1px solid #333;background:transparent;color:#777;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase}
-.btn.active{border-color:#e94560;background:#e94560;color:#fff}
-.btn.danger{color:#e94560;border-color:#e9456044}
-main{max-width:1200px;margin:0 auto;padding:24px 16px}
-.live{display:flex;align-items:center;gap:6px;margin-right:12px;font-family:'Barlow',sans-serif;font-size:11px;color:#52b788}
-.dot{width:6px;height:6px;border-radius:50%;background:#52b788;box-shadow:0 0 8px #52b788;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes fadeSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
-textarea{width:100%;background:#111;border:1px solid #333;color:#e8e6e3;padding:16px;font-family:'Barlow',sans-serif;font-size:16px;resize:vertical;outline:none;box-sizing:border-box}
-.card{cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.card:hover{transform:translateY(-2px)}
-table{width:100%;border-collapse:collapse;font-family:'Barlow',sans-serif}
-th{padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;border-bottom:2px solid rgba(255,255,255,.1);text-align:center;white-space:nowrap}
-td{padding:8px 12px;font-size:13px}
-.team-btn{padding:12px;background:#111;cursor:pointer;text-align:left;transition:all .15s;border:1px solid rgba(255,255,255,.1)}
-.team-btn:hover{background:#1a1a1a}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:center;justify-content:center}
-.modal{background:#1a1a2e;border:1px solid #e94560;padding:32px;max-width:400px;text-align:center}
-.region-btn{padding:6px 14px;border:1px solid #333;background:transparent;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer}
-.result-btn{width:28px;height:24px;border:1px solid #333;background:transparent;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer}
-footer{border-top:1px solid rgba(255,255,255,.06);padding:20px 24px;text-align:center;font-family:'Barlow',sans-serif;font-size:12px;color:#333}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0a0f;color:#e8e6e3;font-family:'Bebas Neue','Oswald',sans-serif;min-height:100vh;}
+.grain{position:fixed;inset:0;opacity:0.03;pointer-events:none;z-index:100;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+header{background:linear-gradient(135deg,#0d0d14,#1a1a2e);border-bottom:3px solid #e94560;padding:20px 24px;position:relative;}
+.rainbow{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e94560,#48cae4,#ffd166,#52b788);}
+.hdr{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.sub{font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#e94560;letter-spacing:4px;text-transform:uppercase;}
+h1{font-size:clamp(24px,4vw,42px);letter-spacing:3px;background:linear-gradient(90deg,#fff 60%,#e94560);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+main{max-width:1200px;margin:0 auto;padding:24px 16px;}
+.nb{padding:8px 16px;border:1px solid #333;background:transparent;color:#777;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;}
+.nb.act{border-color:#e94560;background:#e94560;color:#fff;}
+.nb.dng{color:#e94560;border-color:#e9456044;}
+input[type=text],input[type=password],textarea{background:#111;border:1px solid #333;color:#e8e6e3;font-family:'Barlow',sans-serif;outline:none;box-sizing:border-box;}
+.live{display:flex;align-items:center;gap:6px;margin-right:12px;font-family:'Barlow',sans-serif;font-size:11px;color:#52b788;}
+.ldot{width:6px;height:6px;border-radius:50%;background:#52b788;box-shadow:0 0 8px #52b788;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:flex;align-items:center;justify-content:center;}
+.mdl{background:#1a1a2e;border:1px solid #e94560;padding:32px;max-width:400px;text-align:center;}
+footer{border-top:1px solid rgba(255,255,255,0.06);padding:20px 24px;text-align:center;font-family:'Barlow',sans-serif;font-size:12px;color:#333;}
+.tb{padding:12px;background:#111;cursor:pointer;text-align:left;transition:all 0.15s;border:1px solid rgba(255,255,255,0.05);}
+.tb:hover{background:#1a1a1a;}
+.pc{cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.pc:hover{transform:translateY(-2px);}
+table{width:100%;border-collapse:collapse;font-family:'Barlow',sans-serif;}
+th{padding:10px 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;border-bottom:2px solid rgba(255,255,255,0.1);text-align:center;white-space:nowrap;}
+td{padding:8px 12px;font-size:13px;}
+.wb{width:28px;height:24px;border:1px solid #333;background:transparent;color:#555;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.wb.wa{border-color:#52b788;background:#52b78833;color:#52b788;}
+.wb.la{border-color:#e94560;background:#e9456033;color:#e94560;}
+.rb{padding:6px 14px;border:1px solid #333;background:transparent;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="grain"></div>
 <div id="app"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
-
 <script>
-// ═══ Firebase Setup ═══
 firebase.initializeApp({
-  apiKey: "AIzaSyA_P6wBvkgcrsrs5Z5KCvi27YryFeMBdbw",
-  authDomain: "ncaa-draft-2026-a8aa7.firebaseapp.com",
-  databaseURL: "https://ncaa-draft-2026-a8aa7-default-rtdb.firebaseio.com",
-  projectId: "ncaa-draft-2026-a8aa7",
-  storageBucket: "ncaa-draft-2026-a8aa7.firebasestorage.app",
-  messagingSenderId: "582803729241",
-  appId: "1:582803729241:web:fa5fc0eecb62c7e83ffa48"
+  apiKey:"AIzaSyA_P6wBvkgcrsrs5Z5KCvi27YryFeMBdbw",
+  authDomain:"ncaa-draft-2026-a8aa7.firebaseapp.com",
+  databaseURL:"https://ncaa-draft-2026-a8aa7-default-rtdb.firebaseio.com",
+  projectId:"ncaa-draft-2026-a8aa7",
+  storageBucket:"ncaa-draft-2026-a8aa7.firebasestorage.app",
+  messagingSenderId:"582803729241",
+  appId:"1:582803729241:web:fa5fc0eecb62c7e83ffa48"
 });
-const db = firebase.database();
-</script>
-
-<script type="text/babel">
-const { useState, useEffect, useMemo } = React;
-
-const BRACKET = {
-  East: [
-    {seed:1,name:"Duke"},{seed:16,name:"Siena"},{seed:8,name:"Ohio State"},{seed:9,name:"TCU"},
-    {seed:5,name:"St. John's"},{seed:12,name:"Northern Iowa"},{seed:4,name:"Kansas"},{seed:13,name:"Cal Baptist"},
-    {seed:6,name:"Louisville"},{seed:11,name:"South Florida"},{seed:3,name:"Michigan State"},{seed:14,name:"North Dakota State"},
-    {seed:7,name:"UCLA"},{seed:10,name:"UCF"},{seed:2,name:"UConn"},{seed:15,name:"Furman"},
-  ],
-  West: [
-    {seed:1,name:"Arizona"},{seed:16,name:"LIU"},{seed:8,name:"Villanova"},{seed:9,name:"Utah State"},
-    {seed:5,name:"Wisconsin"},{seed:12,name:"High Point"},{seed:4,name:"Arkansas"},{seed:13,name:"Hawai'i"},
-    {seed:6,name:"BYU"},{seed:11,name:"Miami (OH) / SMU"},{seed:3,name:"Gonzaga"},{seed:14,name:"Kennesaw State"},
-    {seed:7,name:"Miami (FL)"},{seed:10,name:"Missouri"},{seed:2,name:"Purdue"},{seed:15,name:"Queens"},
-  ],
-  Midwest: [
-    {seed:1,name:"Michigan"},{seed:16,name:"Howard"},{seed:8,name:"Georgia"},{seed:9,name:"Saint Louis"},
-    {seed:5,name:"Vanderbilt"},{seed:12,name:"McNeese"},{seed:4,name:"Alabama"},{seed:13,name:"Hofstra"},
-    {seed:6,name:"Tennessee"},{seed:11,name:"Texas"},{seed:3,name:"Virginia"},{seed:14,name:"Wright State"},
-    {seed:7,name:"Kentucky"},{seed:10,name:"Santa Clara"},{seed:2,name:"Iowa State"},{seed:15,name:"Tennessee State"},
-  ],
-  South: [
-    {seed:1,name:"Florida"},{seed:16,name:"Lehigh / Prairie View A&M"},{seed:8,name:"Clemson"},{seed:9,name:"Iowa"},
-    {seed:5,name:"Texas Tech"},{seed:12,name:"Akron"},{seed:4,name:"Nebraska"},{seed:13,name:"Troy"},
-    {seed:6,name:"North Carolina"},{seed:11,name:"VCU"},{seed:3,name:"Illinois"},{seed:14,name:"Penn"},
-    {seed:7,name:"Saint Mary's"},{seed:10,name:"Texas A&M"},{seed:2,name:"Houston"},{seed:15,name:"Idaho"},
-  ],
+const db=firebase.database();
+const ADMIN_CODE="MADNESS2026";
+const BRACKET={
+  East:[{s:1,n:"Duke"},{s:16,n:"Siena"},{s:8,n:"Ohio State"},{s:9,n:"TCU"},{s:5,n:"St. John's"},{s:12,n:"Northern Iowa"},{s:4,n:"Kansas"},{s:13,n:"Cal Baptist"},{s:6,n:"Louisville"},{s:11,n:"South Florida"},{s:3,n:"Michigan State"},{s:14,n:"North Dakota St"},{s:7,n:"UCLA"},{s:10,n:"UCF"},{s:2,n:"UConn"},{s:15,n:"Furman"}],
+  West:[{s:1,n:"Arizona"},{s:16,n:"LIU"},{s:8,n:"Villanova"},{s:9,n:"Utah State"},{s:5,n:"Wisconsin"},{s:12,n:"High Point"},{s:4,n:"Arkansas"},{s:13,n:"Hawai'i"},{s:6,n:"BYU"},{s:11,n:"SMU"},{s:3,n:"Gonzaga"},{s:14,n:"Kennesaw State"},{s:7,n:"Miami (FL)"},{s:10,n:"Missouri"},{s:2,n:"Purdue"},{s:15,n:"Queens"}],
+  Midwest:[{s:1,n:"Michigan"},{s:16,n:"Howard"},{s:8,n:"Georgia"},{s:9,n:"Saint Louis"},{s:5,n:"Vanderbilt"},{s:12,n:"McNeese"},{s:4,n:"Alabama"},{s:13,n:"Hofstra"},{s:6,n:"Tennessee"},{s:11,n:"Texas"},{s:3,n:"Virginia"},{s:14,n:"Wright State"},{s:7,n:"Kentucky"},{s:10,n:"Santa Clara"},{s:2,n:"Iowa State"},{s:15,n:"Tennessee State"}],
+  South:[{s:1,n:"Florida"},{s:16,n:"Lehigh"},{s:8,n:"Clemson"},{s:9,n:"Iowa"},{s:5,n:"Texas Tech"},{s:12,n:"Akron"},{s:4,n:"Nebraska"},{s:13,n:"Troy"},{s:6,n:"North Carolina"},{s:11,n:"VCU"},{s:3,n:"Illinois"},{s:14,n:"Penn"},{s:7,n:"Saint Mary's"},{s:10,n:"Texas A&M"},{s:2,n:"Houston"},{s:15,n:"Idaho"}]
 };
+const T=[];for(const[r,ts]of Object.entries(BRACKET))for(const t of ts)T.push({seed:t.s,name:t.n,region:r});
+const RN=["R64","R32","Sweet 16","Elite 8","Final 4","Championship"],RP=[1,2,4,8,16,32];
+const RC={East:"#e94560",West:"#48cae4",Midwest:"#ffd166",South:"#52b788"};
+const PP=[{b:"#1a1a2e",a:"#e94560"},{b:"#0d1b2a",a:"#48cae4"},{b:"#1b2e1a",a:"#52b788"},{b:"#2e1a1a",a:"#f4845f"},{b:"#2e2a1a",a:"#ffd166"},{b:"#1a1a2e",a:"#7b68ee"},{b:"#2e1a2a",a:"#e07aff"},{b:"#1a2e2e",a:"#00bfa5"},{b:"#2e2020",a:"#ff6b9d"},{b:"#1a2020",a:"#20c997"}];
 
-const ALL_TEAMS = Object.entries(BRACKET).flatMap(([region, teams]) => teams.map(t => ({...t, region})));
-const ROUNDS = ["R64","R32","Sweet 16","Elite 8","Final 4","Championship"];
-const ROUND_POINTS = [1,2,4,8,16,32];
-const REGION_COLORS = {East:"#e94560",West:"#48cae4",Midwest:"#ffd166",South:"#52b788"};
-const PLAYER_PALETTE = [
-  {bg:"#1a1a2e",accent:"#e94560"},{bg:"#0d1b2a",accent:"#48cae4"},
-  {bg:"#1b2e1a",accent:"#52b788"},{bg:"#2e1a1a",accent:"#f4845f"},
-  {bg:"#2e2a1a",accent:"#ffd166"},{bg:"#1a1a2e",accent:"#7b68ee"},
-  {bg:"#2e1a2a",accent:"#e07aff"},{bg:"#1a2e2e",accent:"#00bfa5"},
-  {bg:"#2e2020",accent:"#ff6b9d"},{bg:"#1a2020",accent:"#20c997"},
-];
+let S={ph:"loading",pl:[],pk:[],rs:{},sr:"",vw:"standings",sp:null,fr:"All",sn:"John\nTony\nGriff\nRoss\nLito\nPat\nAndrew\nJordan",sf:null,sg:false,mr:false,rc:"",re:false};
+function ss(u){Object.assign(S,u);render();}
 
-function App() {
-  const [phase, setPhase] = useState("loading");
-  const [players, setPlayers] = useState([]);
-  const [draftPicks, setDraftPicks] = useState([]);
-  const [results, setResults] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
-  const [view, setView] = useState("standings");
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [filterRegion, setFilterRegion] = useState("All");
-  const [setupNames, setSetupNames] = useState("John\nTony\nGriff\nRoss\nLito\nPat\nAndrew\nJordan");
-  const [shuffledOrder, setShuffledOrder] = useState(null);
-  const [isShuffling, setIsShuffling] = useState(false);
-  const [confirmReset, setConfirmReset] = useState(false);
+db.ref("draft").on("value",snap=>{
+  const d=snap.val();
+  if(d&&d.players&&d.players.length>0){
+    ss({pl:d.players,pk:d.picks||[],ph:(d.picks&&d.picks.length>=T.length)?"tracker":"draft"});
+  }else{ss({ph:"setup",pl:[],pk:[]});}
+});
+db.ref("results").on("value",snap=>{const d=snap.val();if(d)ss({rs:d});});
 
-  useEffect(() => {
-    db.ref("draft").on("value", snap => {
-      const data = snap.val();
-      if (data) {
-        setPlayers(data.players || []);
-        setDraftPicks(data.picks || []);
-        if (data.players && data.players.length > 0) {
-          setPhase(data.picks && data.picks.length >= ALL_TEAMS.length ? "tracker" : "draft");
-        } else { setPhase("setup"); }
-      } else { setPhase("setup"); }
-    });
-    db.ref("results").on("value", snap => {
-      if (snap.val()) setResults(snap.val());
-    });
-    return () => { db.ref("draft").off(); db.ref("results").off(); };
-  }, []);
+function gpp(i,p){const n=p.length,r=Math.floor(i/n),pos=i%n;return p[r%2===0?pos:n-1-pos];}
+function gtp(t){const r=S.rs[t]||[];let p=0;r.forEach((v,i)=>{if(v==="Y")p+=RP[i];});return p;}
+function gpd(nm){
+  const teams=S.pk.filter(p=>p.player===nm);let pts=0,w=0,al=0,br=-1,bt=null;
+  teams.forEach(({team})=>{const r=S.rs[team]||[];r.forEach((v,i)=>{if(v==="Y"){pts+=RP[i];w++;}});
+    const lw=r.lastIndexOf("Y");if(lw>br){br=lw;bt=team;}
+    if(!r.includes("N")&&r.filter(v=>v==="Y").length<6)al++;});
+  return{teams,pts,w,al,br,bt};
+}
+function gst(){return S.pl.map((nm,i)=>({nm,c:PP[i%PP.length],...gpd(nm)})).sort((a,b)=>b.pts-a.pts||b.w-a.w);}
 
-  function getPickPlayer(pickNum, playerList) {
-    const n = playerList.length;
-    const round = Math.floor(pickNum / n);
-    const pos = pickNum % n;
-    return playerList[round % 2 === 0 ? pos : n - 1 - pos];
+function dp(tn){const pl=gpp(S.pk.length,S.pl);db.ref("draft").set({players:S.pl,picks:[...S.pk,{pick:S.pk.length+1,player:pl,team:tn}]});}
+function undo(){if(S.pk.length>0)db.ref("draft").set({players:S.pl,picks:S.pk.slice(0,-1)});}
+function sres(t,ri,v){const a=[...(S.rs[t]||[])];a[ri]=v;if(v==="N")for(let i=ri+1;i<6;i++)a[i]=null;db.ref("results").set({...S.rs,[t]:a});}
+function doreset(){if(S.rc!==ADMIN_CODE){ss({re:true});return;}db.ref("draft").set(null);db.ref("results").set(null);ss({ph:"setup",pl:[],pk:[],rs:{},mr:false,rc:"",re:false,sp:null,sf:null});}
+function shuf(){
+  const names=S.sn.split("\n").map(n=>n.trim()).filter(Boolean);if(names.length<2)return;
+  ss({sg:true,sf:null});let c=0;
+  const iv=setInterval(()=>{const s=[...names];for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}
+    ss({sf:[...s]});if(++c>=12){clearInterval(iv);ss({sg:false});}},80);
+}
+function startd(){if(S.sf&&S.sf.length>=2){db.ref("draft").set({players:S.sf,picks:[]});ss({sf:null});}}
+
+function h(tag,at,...ch){
+  const el=document.createElement(tag);
+  if(at)for(const[k,v]of Object.entries(at)){
+    if(k==="style"&&typeof v==="object")Object.assign(el.style,v);
+    else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);
+    else el.setAttribute(k,v);
   }
-
-  function handleDraftPick(teamName) {
-    const player = getPickPlayer(draftPicks.length, players);
-    db.ref("draft").set({ players, picks: [...draftPicks, {pick: draftPicks.length+1, player, team: teamName}] });
-  }
-
-  function undoLastPick() {
-    if (draftPicks.length > 0) db.ref("draft").set({ players, picks: draftPicks.slice(0,-1) });
-  }
-
-  function handleResult(team, ri, val) {
-    const arr = [...(results[team]||[])];
-    arr[ri] = val;
-    if (val==="N") for(let i=ri+1;i<6;i++) arr[i]=null;
-    const nr = {...results, [team]: arr};
-    setResults(nr);
-    db.ref("results").set(nr);
-  }
-
-  function getTeamPoints(team) {
-    return (results[team]||[]).reduce((s,v,i) => v==="Y" ? s+ROUND_POINTS[i] : s, 0);
-  }
-
-  function getPlayerData(name) {
-    const teams = draftPicks.filter(p => p.player === name);
-    let totalPts=0,totalWins=0,alive=0,bestRound=-1,bestTeam=null;
-    teams.forEach(({team}) => {
-      const r = results[team]||[];
-      r.forEach((v,i) => { if(v==="Y"){totalPts+=ROUND_POINTS[i];totalWins++;} });
-      const lw = r.lastIndexOf("Y");
-      if(lw>bestRound){bestRound=lw;bestTeam=team;}
-      if(!r.includes("N")&&r.filter(v=>v==="Y").length<6) alive++;
-    });
-    return {teams,totalPts,totalWins,alive,bestRound,bestTeam};
-  }
-
-  const standings = useMemo(() => {
-    if(!players.length) return [];
-    return players.map((name,i) => ({name,color:PLAYER_PALETTE[i%PLAYER_PALETTE.length],...getPlayerData(name)}))
-      .sort((a,b) => b.totalPts-a.totalPts || b.totalWins-a.totalWins);
-  }, [players,draftPicks,results]);
-
-  function handleReset() {
-    db.ref("draft").set(null);
-    db.ref("results").set(null);
-    setPlayers([]);setDraftPicks([]);setResults({});setPhase("setup");setConfirmReset(false);setSelectedPlayer(null);setShuffledOrder(null);
-  }
-
-  if (phase==="loading") return (
-    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:12}}>
-      <div style={{color:"#e94560",fontFamily:"'Bebas Neue'",fontSize:24,letterSpacing:3}}>CONNECTING...</div>
-      <div style={{color:"#555",fontFamily:"'Barlow'",fontSize:13}}>Syncing with Firebase</div>
-    </div>
-  );
-
-  return (
-    <div>
-      <header>
-        <div className="bar"/>
-        <div className="inner">
-          <div>
-            <div className="tag">2026 NCAA Tournament</div>
-            <h1>SNAKE DRAFT TRACKER</h1>
-          </div>
-          <div className="nav">
-            <div className="live"><div className="dot"/>LIVE SYNC</div>
-            {phase==="draft" && <button className="btn" onClick={()=>setPhase("tracker")}>SKIP TO TRACKER</button>}
-            {phase==="tracker" && ["standings","results","draft board"].map(v =>
-              <button key={v} className={`btn ${view===v?"active":""}`} onClick={()=>{setView(v);setSelectedPlayer(null)}}>{v.toUpperCase()}</button>
-            )}
-            {phase!=="setup" && <button className="btn danger" onClick={()=>setConfirmReset(true)}>RESET</button>}
-          </div>
-        </div>
-      </header>
-
-      {confirmReset && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3 style={{fontFamily:"'Bebas Neue'",fontSize:28,color:"#e94560",letterSpacing:2,margin:"0 0 12px"}}>RESET EVERYTHING?</h3>
-            <p style={{fontFamily:"'Barlow'",fontSize:14,color:"#888",margin:"0 0 24px"}}>This erases the entire draft and all results for everyone.</p>
-            <div style={{display:"flex",gap:12,justifyContent:"center"}}>
-              <button className="btn" style={{background:"#e94560",color:"#fff",borderColor:"#e94560"}} onClick={handleReset}>YES, RESET</button>
-              <button className="btn" onClick={()=>setConfirmReset(false)}>CANCEL</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <main>
-        {/* SETUP */}
-        {phase==="setup" && (
-          <div style={{maxWidth:500,margin:"0 auto"}}>
-            <h2 style={{fontSize:36,letterSpacing:3,textAlign:"center",marginBottom:8}}>DRAFT SETUP</h2>
-            <p style={{fontFamily:"'Barlow'",fontSize:14,color:"#888",textAlign:"center",marginBottom:24}}>Enter player names, one per line. Randomize the order, then start drafting.</p>
-            <textarea value={setupNames} onChange={e=>{setSetupNames(e.target.value);setShuffledOrder(null)}} rows={10}/>
-            <div style={{fontFamily:"'Barlow'",fontSize:13,color:"#555",marginTop:8,marginBottom:20}}>
-              {setupNames.split("\n").filter(n=>n.trim()).length} players · {ALL_TEAMS.length} teams · {Math.ceil(ALL_TEAMS.length/Math.max(1,setupNames.split("\n").filter(n=>n.trim()).length))} rounds
-            </div>
-            <button className="btn" style={{width:"100%",padding:"14px 24px",border:"2px solid #ffd166",fontSize:22,fontFamily:"'Bebas Neue'",letterSpacing:3,color:"#ffd166",background:isShuffling?"#ffd16633":"transparent"}}
-              onClick={()=>{
-                const names=setupNames.split("\n").map(n=>n.trim()).filter(Boolean);
-                if(names.length<2)return;
-                setIsShuffling(true);setShuffledOrder(null);
-                let count=0;
-                const iv=setInterval(()=>{
-                  const s=[...names];
-                  for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}
-                  setShuffledOrder([...s]);count++;
-                  if(count>=12){clearInterval(iv);setIsShuffling(false);}
-                },80);
-              }}>{isShuffling?"SHUFFLING...":"🎲  RANDOMIZE ORDER"}</button>
-
-            {shuffledOrder && !isShuffling && (
-              <div style={{background:"rgba(255,215,102,0.04)",border:"1px solid #ffd16644",padding:16,margin:"12px 0"}}>
-                <div style={{fontFamily:"'Barlow Condensed'",fontSize:12,fontWeight:700,color:"#ffd166",letterSpacing:3,marginBottom:12}}>DRAFT ORDER</div>
-                {shuffledOrder.map((name,i) => {
-                  const c=PLAYER_PALETTE[i%PLAYER_PALETTE.length];
-                  return <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 12px",marginBottom:4,background:c.bg,border:`1px solid ${c.accent}33`,animation:"fadeSlideIn .3s ease-out both",animationDelay:`${i*.05}s`}}>
-                    <div style={{width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",background:i===0?"#e94560":"rgba(255,255,255,.06)",fontFamily:"'Bebas Neue'",fontSize:16,color:"#fff",flexShrink:0}}>{i+1}</div>
-                    <span style={{fontFamily:"'Barlow'",fontSize:15,fontWeight:600,color:c.accent}}>{name}</span>
-                    {i===0 && <span style={{marginLeft:"auto",fontFamily:"'Barlow'",fontSize:10,color:"#e94560",padding:"2px 8px",border:"1px solid #e9456044",letterSpacing:1}}>1ST PICK</span>}
-                  </div>;
-                })}
-                <div style={{fontFamily:"'Barlow'",fontSize:12,color:"#666",marginTop:10}}>↩ Snake format: order reverses each round</div>
-              </div>
-            )}
-
-            <button className="btn" style={{width:"100%",padding:"14px 24px",fontSize:22,fontFamily:"'Bebas Neue'",letterSpacing:3,background:shuffledOrder&&!isShuffling?"#e94560":"#333",color:shuffledOrder&&!isShuffling?"#fff":"#666",border:"none"}}
-              onClick={()=>{if(shuffledOrder&&shuffledOrder.length>=2){db.ref("draft").set({players:shuffledOrder,picks:[]});setShuffledOrder(null);}}}
-            >START DRAFT</button>
-            {!shuffledOrder && <div style={{fontFamily:"'Barlow'",fontSize:12,color:"#555",textAlign:"center",marginTop:8}}>Randomize the order first to unlock the draft</div>}
-          </div>
-        )}
-
-        {/* DRAFT */}
-        {phase==="draft" && (()=>{
-          const drafted=new Set(draftPicks.map(p=>p.team));
-          const otc=getPickPlayer(draftPicks.length,players);
-          const cc=PLAYER_PALETTE[players.indexOf(otc)%PLAYER_PALETTE.length];
-          const avail=ALL_TEAMS.filter(t=>!drafted.has(t.name));
-          const filtered=avail.filter(t=>{
-            const ms=!searchTerm||t.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const mr=filterRegion==="All"||t.region===filterRegion;
-            return ms&&mr;
-          }).sort((a,b)=>a.seed-b.seed);
-          return <div>
-            <div style={{background:`linear-gradient(135deg,${cc.bg},#0a0a0f)`,border:`2px solid ${cc.accent}`,padding:"20px 24px",marginBottom:24,textAlign:"center"}}>
-              <div style={{fontFamily:"'Barlow Condensed'",fontSize:13,color:"#888",letterSpacing:3}}>PICK #{draftPicks.length+1} · ON THE CLOCK</div>
-              <div style={{fontSize:48,letterSpacing:4,color:cc.accent}}>{otc.toUpperCase()}</div>
-              <div style={{fontFamily:"'Barlow'",fontSize:13,color:"#666",marginTop:4}}>{avail.length} teams remaining · Round {Math.floor(draftPicks.length/players.length)+1}</div>
-            </div>
-            <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
-              <input type="text" value={searchTerm} onChange={e=>setSearchTerm(e.target.value)} placeholder="Search teams..." style={{flex:1,minWidth:180,padding:"10px 14px",background:"#111",border:"1px solid #333",color:"#e8e6e3",fontFamily:"'Barlow'",fontSize:14,outline:"none"}}/>
-              {["All",...Object.keys(BRACKET)].map(r =>
-                <button key={r} className="region-btn" onClick={()=>setFilterRegion(r)} style={{borderColor:filterRegion===r?(REGION_COLORS[r]||"#888"):"#333",background:filterRegion===r?(REGION_COLORS[r]||"#888")+"22":"transparent",color:filterRegion===r?(REGION_COLORS[r]||"#fff"):"#666"}}>{r.toUpperCase()}</button>
-              )}
-              {draftPicks.length>0 && <button className="btn danger" onClick={undoLastPick}>UNDO</button>}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:6}}>
-              {filtered.map(t =>
-                <div key={t.name} className="team-btn" style={{borderColor:REGION_COLORS[t.region]+"33"}} onClick={()=>handleDraftPick(t.name)}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor=REGION_COLORS[t.region]}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor=REGION_COLORS[t.region]+"33"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontFamily:"'Barlow Condensed'",fontSize:15,fontWeight:700,color:"#e8e6e3"}}>{t.name}</span>
-                    <span style={{fontFamily:"'Bebas Neue'",fontSize:18,color:REGION_COLORS[t.region],opacity:.7}}>{t.seed}</span>
-                  </div>
-                  <div style={{fontFamily:"'Barlow'",fontSize:11,color:REGION_COLORS[t.region],marginTop:4,opacity:.8}}>{t.region}</div>
-                </div>
-              )}
-            </div>
-            {draftPicks.length>0 && <div style={{marginTop:24}}>
-              <h3 style={{fontSize:20,letterSpacing:2,color:"#888",marginBottom:12}}>RECENT PICKS</h3>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {draftPicks.slice(-12).reverse().map(p=>{
-                  const pc=PLAYER_PALETTE[players.indexOf(p.player)%PLAYER_PALETTE.length];
-                  const ti=ALL_TEAMS.find(t=>t.name===p.team);
-                  return <div key={p.pick} style={{padding:"6px 12px",background:pc.bg,border:`1px solid ${pc.accent}33`,fontFamily:"'Barlow'",fontSize:12}}>
-                    <span style={{color:"#666"}}>#{p.pick}</span>{" "}
-                    <span style={{color:pc.accent,fontWeight:600}}>{p.player}</span>{" "}
-                    <span style={{color:"#aaa"}}>{p.team}</span>
-                    {ti && <span style={{color:REGION_COLORS[ti.region],marginLeft:4,opacity:.6}}>({ti.seed})</span>}
-                  </div>;
-                })}
-              </div>
-            </div>}
-          </div>;
-        })()}
-
-        {/* STANDINGS */}
-        {phase==="tracker"&&view==="standings"&&!selectedPlayer && (
-          <div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:12,marginBottom:24}}>
-              {standings.map((p,i) =>
-                <div key={p.name} className="card" onClick={()=>setSelectedPlayer(p.name)} style={{background:`linear-gradient(135deg,${p.color.bg},#0a0a0f)`,border:`1px solid ${p.color.accent}33`}}
-                  onMouseEnter={e=>{e.currentTarget.style.borderColor=p.color.accent}}
-                  onMouseLeave={e=>{e.currentTarget.style.borderColor=p.color.accent+"33"}}>
-                  <div style={{position:"absolute",top:0,left:0,width:32,height:32,background:i===0?"#e94560":i===1?"#888":i===2?"#cd7f32":"rgba(255,255,255,.06)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Bebas Neue'",fontSize:18,color:"#fff"}}>{i+1}</div>
-                  <div style={{padding:"16px 16px 12px"}}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                      <div style={{fontSize:28,color:p.color.accent,letterSpacing:2}}>{p.name.toUpperCase()}</div>
-                      <div style={{textAlign:"right"}}><div style={{fontSize:36,fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:1}}>{p.totalPts}</div><div style={{fontSize:10,fontFamily:"'Barlow'",color:"#555",letterSpacing:1}}>PTS</div></div>
-                    </div>
-                    <div style={{display:"flex",gap:14,marginTop:8,fontFamily:"'Barlow'",fontSize:12,color:"#777"}}>
-                      <span><strong style={{color:"#ccc"}}>{p.totalWins}</strong> wins</span>
-                      <span><strong style={{color:p.alive>0?"#52b788":"#e94560"}}>{p.alive}</strong> alive</span>
-                      <span><strong style={{color:"#ccc"}}>{p.teams.length}</strong> teams</span>
-                    </div>
-                  </div>
-                  <div style={{height:2,background:`linear-gradient(90deg,${p.color.accent},transparent)`}}/>
-                </div>
-              )}
-            </div>
-            <div style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",padding:"12px 20px",display:"flex",flexWrap:"wrap",gap:14,alignItems:"center"}}>
-              <span style={{fontFamily:"'Barlow Condensed'",fontSize:12,color:"#555",letterSpacing:2}}>POINTS:</span>
-              {ROUNDS.map((r,i) => <span key={r} style={{fontFamily:"'Barlow'",fontSize:12,color:"#888"}}>{r} = <strong style={{color:"#e94560"}}>{ROUND_POINTS[i]}</strong></span>)}
-            </div>
-          </div>
-        )}
-
-        {/* PLAYER DETAIL */}
-        {phase==="tracker"&&view==="standings"&&selectedPlayer && (()=>{
-          const p=standings.find(s=>s.name===selectedPlayer);
-          if(!p)return null;
-          return <div>
-            <button className="btn" style={{marginBottom:20}} onClick={()=>setSelectedPlayer(null)}>← BACK</button>
-            <div style={{background:`linear-gradient(135deg,${p.color.bg},#0a0a0f)`,border:`1px solid ${p.color.accent}44`,padding:24,marginBottom:20,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:16}}>
-              <h2 style={{fontSize:40,margin:0,color:p.color.accent,letterSpacing:4}}>{selectedPlayer.toUpperCase()}</h2>
-              <div style={{textAlign:"right"}}><div style={{fontSize:48,fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:1}}>{p.totalPts}</div><div style={{fontSize:12,fontFamily:"'Barlow'",color:"#555"}}>TOTAL POINTS</div></div>
-            </div>
-            <div style={{overflowX:"auto"}}><table>
-              <thead><tr><th style={{width:40}}>Pick</th><th style={{textAlign:"left"}}>Team</th><th style={{width:50}}>Seed</th><th style={{textAlign:"left"}}>Region</th>{ROUNDS.map(r=><th key={r}>{r}</th>)}<th>PTS</th></tr></thead>
-              <tbody>{p.teams.map(({pick,team})=>{
-                const info=ALL_TEAMS.find(t=>t.name===team);
-                const pts=getTeamPoints(team);
-                const r=results[team]||[];
-                return <tr key={pick} style={{borderBottom:"1px solid rgba(255,255,255,.04)"}}>
-                  <td style={{color:"#555",textAlign:"center"}}>{pick}</td>
-                  <td style={{fontWeight:600}}>{team}</td>
-                  <td style={{textAlign:"center",color:info?REGION_COLORS[info.region]:"#888"}}>{info?info.seed:""}</td>
-                  <td style={{color:info?REGION_COLORS[info.region]:"#888",fontSize:12}}>{info?info.region:""}</td>
-                  {ROUNDS.map((_,ri)=><td key={ri} style={{textAlign:"center"}}>{r[ri]==="Y"?<span style={{color:"#52b788",fontWeight:700}}>W</span>:r[ri]==="N"?<span style={{color:"#e94560",fontWeight:700}}>L</span>:<span style={{color:"#222"}}>—</span>}</td>)}
-                  <td style={{textAlign:"center",fontWeight:700,color:p.color.accent}}>{pts}</td>
-                </tr>;
-              })}</tbody>
-            </table></div>
-          </div>;
-        })()}
-
-        {/* RESULTS */}
-        {phase==="tracker"&&view==="results" && (
-          <div>
-            <h2 style={{fontSize:32,letterSpacing:3,marginBottom:4}}>UPDATE RESULTS</h2>
-            <p style={{fontFamily:"'Barlow'",fontSize:13,color:"#666",marginBottom:20}}>Click W or L per round. Updates sync to everyone in real time.</p>
-            <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
-              {["All",...Object.keys(BRACKET)].map(r =>
-                <button key={r} className="region-btn" onClick={()=>setFilterRegion(r)} style={{borderColor:filterRegion===r?(REGION_COLORS[r]||"#888"):"#333",background:filterRegion===r?(REGION_COLORS[r]||"#888")+"22":"transparent",color:filterRegion===r?(REGION_COLORS[r]||"#fff"):"#555"}}>{r.toUpperCase()}</button>
-              )}
-            </div>
-            <div style={{overflowX:"auto"}}><table>
-              <thead><tr><th style={{textAlign:"left"}}>Team</th><th style={{width:60}}>Seed</th><th style={{textAlign:"left"}}>Owner</th>{ROUNDS.map(r=><th key={r} style={{width:80}}>{r}</th>)}</tr></thead>
-              <tbody>{ALL_TEAMS.filter(t=>filterRegion==="All"||t.region===filterRegion).sort((a,b)=>a.seed-b.seed).map(team=>{
-                const owner=draftPicks.find(p=>p.team===team.name);
-                const oi=owner?players.indexOf(owner.player):-1;
-                const oc=oi>=0?PLAYER_PALETTE[oi%PLAYER_PALETTE.length]:null;
-                const r=results[team.name]||[];
-                return <tr key={team.name} style={{borderBottom:"1px solid rgba(255,255,255,.04)"}}>
-                  <td style={{fontWeight:600}}><span style={{color:REGION_COLORS[team.region],marginRight:6,fontSize:10,opacity:.5}}>●</span>{team.name}</td>
-                  <td style={{textAlign:"center",color:REGION_COLORS[team.region]}}>{team.seed}</td>
-                  <td style={{color:oc?oc.accent:"#555",fontWeight:500,fontSize:12}}>{owner?owner.player:"—"}</td>
-                  {ROUNDS.map((_,ri)=>{
-                    const prevLoss=r.slice(0,ri).includes("N");
-                    const prevOk=ri===0||r.slice(0,ri).every(v=>v==="Y");
-                    const canEdit=!prevLoss&&prevOk;
-                    return <td key={ri} style={{textAlign:"center"}}>{canEdit?
-                      <div style={{display:"flex",gap:2,justifyContent:"center"}}>
-                        <button className="result-btn" onClick={()=>handleResult(team.name,ri,"Y")} style={{borderColor:r[ri]==="Y"?"#52b788":"#333",background:r[ri]==="Y"?"#52b78833":"transparent",color:r[ri]==="Y"?"#52b788":"#555"}}>W</button>
-                        <button className="result-btn" onClick={()=>handleResult(team.name,ri,"N")} style={{borderColor:r[ri]==="N"?"#e94560":"#333",background:r[ri]==="N"?"#e9456033":"transparent",color:r[ri]==="N"?"#e94560":"#555"}}>L</button>
-                      </div>
-                    :prevLoss?<span style={{color:"#222"}}>✕</span>:<span style={{color:"#222"}}>—</span>}</td>;
-                  })}
-                </tr>;
-              })}</tbody>
-            </table></div>
-          </div>
-        )}
-
-        {/* DRAFT BOARD */}
-        {phase==="tracker"&&view==="draft board" && (
-          <div>
-            <h2 style={{fontSize:32,letterSpacing:3,marginBottom:20}}>DRAFT BOARD</h2>
-            {Array.from({length:Math.ceil(draftPicks.length/players.length)},(_,rn)=>{
-              const picks=draftPicks.slice(rn*players.length,(rn+1)*players.length);
-              const snake=rn%2===1;
-              const disp=snake?[...picks].reverse():picks;
-              return <div key={rn} style={{marginBottom:4}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                  <span style={{fontFamily:"'Barlow Condensed'",fontSize:11,color:"#444",letterSpacing:2}}>RD {rn+1}</span>
-                  {snake && <span style={{fontSize:9,color:"#e94560",fontFamily:"'Barlow'",padding:"1px 5px",border:"1px solid #e9456033"}}>↩</span>}
-                  <div style={{flex:1,height:1,background:"rgba(255,255,255,.04)"}}/>
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:4,marginBottom:12}}>
-                  {disp.map(p=>{
-                    const pi=players.indexOf(p.player);
-                    const pc=PLAYER_PALETTE[pi%PLAYER_PALETTE.length];
-                    const info=ALL_TEAMS.find(t=>t.name===p.team);
-                    const r=results[p.team]||[];
-                    const elim=r.includes("N");
-                    const alive=!elim&&r.filter(v=>v==="Y").length>0;
-                    return <div key={p.pick} style={{padding:"8px 10px",background:elim?"#0a0a0f":pc.bg,border:`1px solid ${alive?pc.accent+"66":"rgba(255,255,255,.04)"}`,opacity:elim?0.4:1,position:"relative"}}>
-                      <div style={{fontSize:9,fontFamily:"'Barlow'",color:"#444"}}>#{p.pick}</div>
-                      <div style={{fontSize:13,fontFamily:"'Barlow Condensed'",fontWeight:700,color:elim?"#444":"#e8e6e3",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.team}</div>
-                      <div style={{fontSize:10,fontFamily:"'Barlow'",color:pc.accent,marginTop:1}}>{p.player}</div>
-                      {info && <div style={{fontSize:9,color:REGION_COLORS[info.region],opacity:.5,fontFamily:"'Barlow'"}}>{info.region} {info.seed}</div>}
-                      {alive && <div style={{position:"absolute",top:4,right:4,width:5,height:5,borderRadius:"50%",background:"#52b788",boxShadow:"0 0 4px #52b788"}}/>}
-                    </div>;
-                  })}
-                </div>
-              </div>;
-            })}
-          </div>
-        )}
-      </main>
-      <footer>NCAA Tournament Snake Draft · {players.length>0?`${players.length} Players`:""} · 2026 · Real-Time Sync</footer>
-    </div>
-  );
+  for(const c of ch.flat()){if(c==null)continue;el.appendChild(typeof c==="string"?document.createTextNode(c):c);}
+  return el;
 }
 
-ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
+function render(){
+  const app=document.getElementById("app");app.innerHTML="";
+  // Header
+  app.appendChild(h("header",null,h("div",{class:"rainbow"}),h("div",{class:"hdr"},
+    h("div",null,h("div",{class:"sub"},"2026 NCAA Tournament"),h("h1",null,"SNAKE DRAFT TRACKER")),
+    h("div",{style:{display:"flex",gap:"4px",flexWrap:"wrap",alignItems:"center"}},
+      h("div",{class:"live"},h("div",{class:"ldot"}),"LIVE SYNC"),
+      ...(S.ph==="draft"?[h("button",{class:"nb",onClick:()=>ss({ph:"tracker",vw:"standings"})},"TRACKER")]:[]),
+      ...(S.ph==="tracker"?["standings","results","draft board"].map(v=>h("button",{class:"nb"+(S.vw===v?" act":""),onClick:()=>ss({vw:v,sp:null})},v.toUpperCase())):[]),
+      ...(S.ph!=="setup"?[h("button",{class:"nb dng",onClick:()=>ss({mr:true,rc:"",re:false})},"RESET")]:[]))
+  )));
+  // Reset modal
+  if(S.mr){
+    const inp=h("input",{type:"password",placeholder:"Enter admin code...",style:{width:"100%",padding:"12px 16px",fontSize:"16px",textAlign:"center",letterSpacing:"3px",marginBottom:"8px",borderColor:S.re?"#e94560":"#333"}});
+    inp.value=S.rc;inp.addEventListener("input",e=>{S.rc=e.target.value.toUpperCase();S.re=false;});
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")doreset();});
+    setTimeout(()=>inp.focus(),50);
+    app.appendChild(h("div",{class:"mbg"},h("div",{class:"mdl"},
+      h("h3",{style:{fontFamily:"'Bebas Neue'",fontSize:"28px",color:"#e94560",letterSpacing:"2px",marginBottom:"12px"}},"RESET EVERYTHING?"),
+      h("p",{style:{fontFamily:"'Barlow'",fontSize:"14px",color:"#888",marginBottom:"16px"}},"Enter admin code to erase the draft for everyone."),
+      inp,
+      ...(S.re?[h("p",{style:{fontFamily:"'Barlow'",fontSize:"13px",color:"#e94560",margin:"0 0 12px"}},"Wrong code. Try again.")]:[]),
+      h("div",{style:{display:"flex",gap:"12px",justifyContent:"center",marginTop:"12px"}},
+        h("button",{class:"nb",style:{background:"#e94560",color:"#fff",padding:"10px 24px",borderColor:"#e94560"},onClick:doreset},"CONFIRM"),
+        h("button",{class:"nb",style:{padding:"10px 24px"},onClick:()=>ss({mr:false,rc:"",re:false})},"CANCEL"))
+    )));
+  }
+  const main=h("main",null);app.appendChild(main);
+
+  // LOADING
+  if(S.ph==="loading"){main.appendChild(h("div",{style:{textAlign:"center",paddingTop:"100px"}},
+    h("div",{style:{color:"#e94560",fontFamily:"'Bebas Neue'",fontSize:"24px",letterSpacing:"3px"}},"CONNECTING..."),
+    h("div",{style:{color:"#555",fontFamily:"'Barlow'",fontSize:"13px",marginTop:"8px"}},"Syncing with Firebase")));
+  }
+
+  // SETUP
+  if(S.ph==="setup"){
+    const w=h("div",{style:{maxWidth:"500px",margin:"0 auto"}});
+    w.appendChild(h("h2",{style:{fontSize:"36px",letterSpacing:"3px",textAlign:"center",marginBottom:"8px"}},"DRAFT SETUP"));
+    w.appendChild(h("p",{style:{fontFamily:"'Barlow'",fontSize:"14px",color:"#888",textAlign:"center",marginBottom:"24px"}},"Enter player names, one per line. Randomize the order, then start."));
+    const ta=h("textarea",{rows:"10",placeholder:"One name per line...",style:{width:"100%",padding:"16px",fontSize:"16px",resize:"vertical"}});
+    ta.value=S.sn;ta.addEventListener("input",e=>{S.sn=e.target.value;S.sf=null;render();});w.appendChild(ta);
+    const nm=S.sn.split("\n").filter(n=>n.trim());
+    w.appendChild(h("div",{style:{fontFamily:"'Barlow'",fontSize:"13px",color:"#555",margin:"8px 0 20px"}},`${nm.length} players · ${T.length} teams · ${Math.ceil(T.length/Math.max(1,nm.length))} rounds`));
+    w.appendChild(h("button",{style:{width:"100%",padding:"14px",border:"2px solid #ffd166",cursor:"pointer",marginBottom:"12px",fontFamily:"'Bebas Neue'",fontSize:"22px",letterSpacing:"3px",background:S.sg?"#ffd16633":"transparent",color:"#ffd166",opacity:nm.length<2?"0.4":"1"},onClick:shuf},S.sg?"SHUFFLING...":"\uD83C\uDFB2  RANDOMIZE ORDER"));
+    if(S.sf&&!S.sg){
+      const bx=h("div",{style:{background:"rgba(255,215,102,0.04)",border:"1px solid #ffd16644",padding:"16px",marginBottom:"16px"}});
+      bx.appendChild(h("div",{style:{fontFamily:"'Barlow Condensed'",fontSize:"12px",fontWeight:"700",color:"#ffd166",letterSpacing:"3px",marginBottom:"12px"}},"DRAFT ORDER"));
+      S.sf.forEach((name,i)=>{const c=PP[i%PP.length];
+        bx.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:"10px",padding:"8px 12px",marginBottom:"4px",background:c.b,border:`1px solid ${c.a}33`,animation:`fadeIn 0.3s ease-out ${i*0.05}s both`}},
+          h("div",{style:{width:"28px",height:"28px",display:"flex",alignItems:"center",justifyContent:"center",background:i===0?"#e94560":"rgba(255,255,255,0.06)",fontFamily:"'Bebas Neue'",fontSize:"16px",color:"#fff",flexShrink:"0"}},String(i+1)),
+          h("span",{style:{fontFamily:"'Barlow'",fontSize:"15px",fontWeight:"600",color:c.a}},name),
+          ...(i===0?[h("span",{style:{marginLeft:"auto",fontFamily:"'Barlow'",fontSize:"10px",color:"#e94560",padding:"2px 8px",border:"1px solid #e9456044",letterSpacing:"1px"}},"1ST PICK")]:[])
+        ));});
+      bx.appendChild(h("div",{style:{fontFamily:"'Barlow'",fontSize:"12px",color:"#666",marginTop:"10px"}},"↩ Snake: order reverses each round"));
+      w.appendChild(bx);
+    }
+    const ok=S.sf&&!S.sg;
+    w.appendChild(h("button",{style:{width:"100%",padding:"14px",border:"none",cursor:"pointer",fontFamily:"'Bebas Neue'",fontSize:"22px",letterSpacing:"3px",background:ok?"#e94560":"#333",color:ok?"#fff":"#666"},onClick:startd},"START DRAFT"));
+    if(!S.sf)w.appendChild(h("div",{style:{fontFamily:"'Barlow'",fontSize:"12px",color:"#555",textAlign:"center",marginTop:"8px"}},"Randomize first to unlock"));
+    main.appendChild(w);
+  }
+
+  // DRAFT
+  if(S.ph==="draft"){
+    const dr=new Set(S.pk.map(p=>p.team)),otc=gpp(S.pk.length,S.pl),ci=S.pl.indexOf(otc),cc=PP[ci%PP.length];
+    const av=T.filter(t=>!dr.has(t.name)),fl=av.filter(t=>(!S.sr||t.name.toLowerCase().includes(S.sr.toLowerCase()))&&(S.fr==="All"||t.region===S.fr)).sort((a,b)=>a.seed-b.seed);
+    main.appendChild(h("div",{style:{background:`linear-gradient(135deg,${cc.b},#0a0a0f)`,border:`2px solid ${cc.a}`,padding:"20px 24px",marginBottom:"24px",textAlign:"center"}},
+      h("div",{style:{fontFamily:"'Barlow Condensed'",fontSize:"13px",color:"#888",letterSpacing:"3px"}},`PICK #${S.pk.length+1} · ON THE CLOCK`),
+      h("div",{style:{fontSize:"48px",letterSpacing:"4px",color:cc.a}},otc.toUpperCase()),
+      h("div",{style:{fontFamily:"'Barlow'",fontSize:"13px",color:"#666",marginTop:"4px"}},`${av.length} left · Round ${Math.floor(S.pk.length/S.pl.length)+1}`)
+    ));
+    const ct=h("div",{style:{display:"flex",gap:"8px",marginBottom:"16px",flexWrap:"wrap"}});
+    const si=h("input",{type:"text",placeholder:"Search teams...",style:{flex:"1",minWidth:"180px",padding:"10px 14px",fontSize:"14px"}});
+    si.value=S.sr;si.addEventListener("input",e=>{S.sr=e.target.value;render();});ct.appendChild(si);
+    ["All","East","West","Midwest","South"].forEach(r=>{const a=S.fr===r;
+      ct.appendChild(h("button",{class:"rb",style:{borderColor:a?(RC[r]||"#888"):"#333",background:a?(RC[r]||"#888")+"22":"transparent",color:a?(RC[r]||"#fff"):"#666"},onClick:()=>ss({fr:r})},r.toUpperCase()));});
+    if(S.pk.length>0)ct.appendChild(h("button",{class:"nb dng",onClick:undo},"UNDO"));
+    main.appendChild(ct);
+    const gr=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:"6px"}});
+    fl.forEach(t=>{gr.appendChild(h("button",{class:"tb",style:{borderColor:RC[t.region]+"33"},onClick:()=>dp(t.name)},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
+        h("span",{style:{fontFamily:"'Barlow Condensed'",fontSize:"15px",fontWeight:"700",color:"#e8e6e3"}},t.name),
+        h("span",{style:{fontFamily:"'Bebas Neue'",fontSize:"18px",color:RC[t.region],opacity:"0.7"}},String(t.seed))),
+      h("div",{style:{fontFamily:"'Barlow'",fontSize:"11px",color:RC[t.region],marginTop:"4px",opacity:"0.8"}},t.region)));});
+    main.appendChild(gr);
+    if(S.pk.length>0){
+      main.appendChild(h("h3",{style:{fontSize:"20px",letterSpacing:"2px",color:"#888",margin:"24px 0 12px"}},"RECENT PICKS"));
+      const rp=h("div",{style:{display:"flex",flexWrap:"wrap",gap:"6px"}});
+      S.pk.slice(-12).reverse().forEach(p=>{const pc=PP[S.pl.indexOf(p.player)%PP.length],ti=T.find(t=>t.name===p.team);
+        rp.appendChild(h("div",{style:{padding:"6px 12px",background:pc.b,border:`1px solid ${pc.a}33`,fontFamily:"'Barlow'",fontSize:"12px"}},
+          h("span",{style:{color:"#666"}},`#${p.pick} `),h("span",{style:{color:pc.a,fontWeight:"600"}},p.player+" "),
+          h("span",{style:{color:"#aaa"}},p.team),
+          ...(ti?[h("span",{style:{color:RC[ti.region],marginLeft:"4px",opacity:"0.6"}},`(${ti.seed})`)]:[])
+        ));});
+      main.appendChild(rp);
+    }
+  }
+
+  // STANDINGS
+  if(S.ph==="tracker"&&S.vw==="standings"&&!S.sp){
+    const st=gst(),gr=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:"12px",marginBottom:"24px"}});
+    st.forEach((p,i)=>{
+      gr.appendChild(h("div",{class:"pc",style:{background:`linear-gradient(135deg,${p.c.b},#0a0a0f)`,border:`1px solid ${p.c.a}33`},onClick:()=>ss({sp:p.nm})},
+        h("div",{style:{position:"absolute",top:"0",left:"0",width:"32px",height:"32px",background:i===0?"#e94560":i===1?"#888":i===2?"#cd7f32":"rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Bebas Neue'",fontSize:"18px",color:"#fff"}},String(i+1)),
+        h("div",{style:{padding:"16px 16px 12px"}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}},
+            h("div",{style:{fontSize:"28px",color:p.c.a,letterSpacing:"2px"}},p.nm.toUpperCase()),
+            h("div",{style:{textAlign:"right"}},h("div",{style:{fontSize:"36px",fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:"1"}},String(p.pts)),h("div",{style:{fontSize:"10px",fontFamily:"'Barlow'",color:"#555",letterSpacing:"1px"}},"PTS"))),
+          h("div",{style:{display:"flex",gap:"14px",marginTop:"8px",fontFamily:"'Barlow'",fontSize:"12px",color:"#777"}},
+            h("span",null,h("strong",{style:{color:"#ccc"}},String(p.w))," wins"),
+            h("span",null,h("strong",{style:{color:p.al>0?"#52b788":"#e94560"}},String(p.al))," alive"),
+            h("span",null,h("strong",{style:{color:"#ccc"}},String(p.teams.length))," teams"))),
+        h("div",{style:{height:"2px",background:`linear-gradient(90deg,${p.c.a},transparent)`}})));});
+    main.appendChild(gr);
+    main.appendChild(h("div",{style:{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.06)",padding:"12px 20px",display:"flex",flexWrap:"wrap",gap:"14px",alignItems:"center"}},
+      h("span",{style:{fontFamily:"'Barlow Condensed'",fontSize:"12px",color:"#555",letterSpacing:"2px"}},"POINTS:"),
+      ...RN.map((r,i)=>h("span",{style:{fontFamily:"'Barlow'",fontSize:"12px",color:"#888"}},`${r} = `,h("strong",{style:{color:"#e94560"}},String(RP[i]))))));
+  }
+
+  // PLAYER DETAIL
+  if(S.ph==="tracker"&&S.vw==="standings"&&S.sp){
+    const st=gst(),p=st.find(s=>s.nm===S.sp);if(!p)return;
+    main.appendChild(h("button",{class:"nb",style:{marginBottom:"20px"},onClick:()=>ss({sp:null})},"← BACK"));
+    main.appendChild(h("div",{style:{background:`linear-gradient(135deg,${p.c.b},#0a0a0f)`,border:`1px solid ${p.c.a}44`,padding:"24px",marginBottom:"20px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"16px"}},
+      h("h2",{style:{fontSize:"40px",margin:"0",color:p.c.a,letterSpacing:"4px"}},S.sp.toUpperCase()),
+      h("div",{style:{textAlign:"right"}},h("div",{style:{fontSize:"48px",fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:"1"}},String(p.pts)),h("div",{style:{fontSize:"12px",fontFamily:"'Barlow'",color:"#555"}},"TOTAL POINTS"))));
+    const tbl=h("table",null),thd=h("thead",null,h("tr",null,h("th",{style:{width:"40px"}},"Pick"),h("th",{style:{textAlign:"left"}},"Team"),h("th",{style:{width:"50px"}},"Seed"),h("th",{style:{textAlign:"left"}},"Region"),...RN.map(r=>h("th",null,r)),h("th",null,"PTS")));
+    tbl.appendChild(thd);const tbd=h("tbody",null);
+    p.teams.forEach(({pick,team})=>{const info=T.find(t=>t.name===team),pts=gtp(team),r=S.rs[team]||[];
+      tbd.appendChild(h("tr",{style:{borderBottom:"1px solid rgba(255,255,255,0.04)"}},
+        h("td",{style:{color:"#555",textAlign:"center"}},String(pick)),h("td",{style:{fontWeight:"600"}},team),
+        h("td",{style:{textAlign:"center",color:info?RC[info.region]:"#888"}},String(info?.seed||"")),
+        h("td",{style:{color:info?RC[info.region]:"#888",fontSize:"12px"}},info?.region||""),
+        ...RN.map((_,ri)=>h("td",{style:{textAlign:"center"}},r[ri]==="Y"?h("span",{style:{color:"#52b788",fontWeight:"700"}},"W"):r[ri]==="N"?h("span",{style:{color:"#e94560",fontWeight:"700"}},"L"):h("span",{style:{color:"#222"}},"—"))),
+        h("td",{style:{textAlign:"center",fontWeight:"700",color:p.c.a}},String(pts))));});
+    tbl.appendChild(tbd);const wr=h("div",{style:{overflowX:"auto"}});wr.appendChild(tbl);main.appendChild(wr);
+  }
+
+  // RESULTS
+  if(S.ph==="tracker"&&S.vw==="results"){
+    main.appendChild(h("h2",{style:{fontSize:"32px",letterSpacing:"3px",marginBottom:"4px"}},"UPDATE RESULTS"));
+    main.appendChild(h("p",{style:{fontFamily:"'Barlow'",fontSize:"13px",color:"#666",marginBottom:"20px"}},"Click W or L per round. Syncs to everyone in real time."));
+    const fb=h("div",{style:{display:"flex",gap:"6px",marginBottom:"16px",flexWrap:"wrap"}});
+    ["All","East","West","Midwest","South"].forEach(r=>{const a=S.fr===r;
+      fb.appendChild(h("button",{class:"rb",style:{borderColor:a?(RC[r]||"#888"):"#333",background:a?(RC[r]||"#888")+"22":"transparent",color:a?(RC[r]||"#fff"):"#555"},onClick:()=>ss({fr:r})},r.toUpperCase()));});
+    main.appendChild(fb);
+    const tbl=h("table",null);tbl.appendChild(h("thead",null,h("tr",null,h("th",{style:{textAlign:"left"}},"Team"),h("th",{style:{width:"60px"}},"Seed"),h("th",{style:{textAlign:"left"}},"Owner"),...RN.map(r=>h("th",{style:{width:"80px"}},r)))));
+    const tbd=h("tbody",null);
+    T.filter(t=>S.fr==="All"||t.region===S.fr).sort((a,b)=>a.seed-b.seed).forEach(team=>{
+      const ow=S.pk.find(p=>p.team===team.name),oi=ow?S.pl.indexOf(ow.player):-1,oc=oi>=0?PP[oi%PP.length]:null,r=S.rs[team.name]||[];
+      tbd.appendChild(h("tr",{style:{borderBottom:"1px solid rgba(255,255,255,0.04)"}},
+        h("td",{style:{fontWeight:"600"}},h("span",{style:{color:RC[team.region],marginRight:"6px",fontSize:"10px",opacity:"0.5"}},"●"),team.name),
+        h("td",{style:{textAlign:"center",color:RC[team.region]}},String(team.seed)),
+        h("td",{style:{color:oc?oc.a:"#555",fontWeight:"500",fontSize:"12px"}},ow?ow.player:"—"),
+        ...RN.map((_,ri)=>{
+          const pl=r.slice(0,ri).includes("N"),po=ri===0||r.slice(0,ri).every(v=>v==="Y"),ce=!pl&&po;
+          const td=h("td",{style:{textAlign:"center"}});
+          if(ce){const d=h("div",{style:{display:"flex",gap:"2px",justifyContent:"center"}});
+            d.appendChild(h("button",{class:"wb"+(r[ri]==="Y"?" wa":""),onClick:()=>sres(team.name,ri,"Y")},"W"));
+            d.appendChild(h("button",{class:"wb"+(r[ri]==="N"?" la":""),onClick:()=>sres(team.name,ri,"N")},"L"));td.appendChild(d);
+          }else{td.appendChild(h("span",{style:{color:"#222"}},pl?"✕":"—"));}return td;})
+      ));});
+    tbl.appendChild(tbd);const wr=h("div",{style:{overflowX:"auto"}});wr.appendChild(tbl);main.appendChild(wr);
+  }
+
+  // DRAFT BOARD
+  if(S.ph==="tracker"&&S.vw==="draft board"){
+    main.appendChild(h("h2",{style:{fontSize:"32px",letterSpacing:"3px",marginBottom:"20px"}},"DRAFT BOARD"));
+    for(let rn=0;rn<Math.ceil(S.pk.length/S.pl.length);rn++){
+      const st=rn*S.pl.length,pks=S.pk.slice(st,st+S.pl.length),sn=rn%2===1,disp=sn?[...pks].reverse():pks;
+      main.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}},
+        h("span",{style:{fontFamily:"'Barlow Condensed'",fontSize:"11px",color:"#444",letterSpacing:"2px"}},`RD ${rn+1}`),
+        ...(sn?[h("span",{style:{fontSize:"9px",color:"#e94560",fontFamily:"'Barlow'",padding:"1px 5px",border:"1px solid #e9456033"}},"↩")]:[]),
+        h("div",{style:{flex:"1",height:"1px",background:"rgba(255,255,255,0.04)"}})));
+      const gr=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:"4px",marginBottom:"12px"}});
+      disp.forEach(p=>{const pi=S.pl.indexOf(p.player),pc=PP[pi%PP.length],info=T.find(t=>t.name===p.team),r=S.rs[p.team]||[],el=r.includes("N"),al=!el&&r.filter(v=>v==="Y").length>0;
+        gr.appendChild(h("div",{style:{padding:"8px 10px",background:el?"#0a0a0f":pc.b,border:`1px solid ${al?pc.a+"66":"rgba(255,255,255,0.04)"}`,opacity:el?"0.4":"1",position:"relative"}},
+          h("div",{style:{fontSize:"9px",fontFamily:"'Barlow'",color:"#444"}},`#${p.pick}`),
+          h("div",{style:{fontSize:"13px",fontFamily:"'Barlow Condensed'",fontWeight:"700",color:el?"#444":"#e8e6e3",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},p.team),
+          h("div",{style:{fontSize:"10px",fontFamily:"'Barlow'",color:pc.a,marginTop:"1px"}},p.player),
+          ...(info?[h("div",{style:{fontSize:"9px",color:RC[info.region],opacity:"0.5",fontFamily:"'Barlow'"}},`${info.region} ${info.seed}`)]:[]),
+          ...(al?[h("div",{style:{position:"absolute",top:"4px",right:"4px",width:"5px",height:"5px",borderRadius:"50%",background:"#52b788",boxShadow:"0 0 4px #52b788"}})]:[])
+        ));});main.appendChild(gr);}
+  }
+  app.appendChild(h("footer",null,`NCAA Snake Draft · ${S.pl.length>0?S.pl.length+" Players · ":""}2026 · Real-Time Sync`));
+}
+render();
 </script>
 </body>
 </html>
