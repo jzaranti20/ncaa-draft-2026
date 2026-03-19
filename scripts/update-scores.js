@@ -1,93 +1,213 @@
-const DB_URL = process.env.FIREBASE_DATABASE_URL;
+// ESPN NCAA Tournament Score Fetcher v2
+// Smarter detection: if both teams are in our bracket, it's a tournament game
 
-const TEAM_NAMES = {
+const FIREBASE_DB_URL = process.env.FIREBASE_DATABASE_URL;
+
+// Maps ESPN display names to our bracket names
+const NAME_MAP = {
+  // East
   "Duke Blue Devils":"Duke","Siena Saints":"Siena","Ohio State Buckeyes":"Ohio State",
-  "TCU Horned Frogs":"TCU","St. John's Red Storm":"St. John's","Northern Iowa Panthers":"Northern Iowa",
-  "Kansas Jayhawks":"Kansas","Cal Baptist Lancers":"Cal Baptist","Louisville Cardinals":"Louisville",
+  "TCU Horned Frogs":"TCU","St. John's Red Storm":"St. John's",
+  "Northern Iowa Panthers":"Northern Iowa","Kansas Jayhawks":"Kansas",
+  "Cal Baptist Lancers":"Cal Baptist","Louisville Cardinals":"Louisville",
   "South Florida Bulls":"South Florida","Michigan State Spartans":"Michigan State",
-  "North Dakota State Bison":"North Dakota State","UCLA Bruins":"UCLA","UCF Knights":"UCF",
-  "UConn Huskies":"UConn","Furman Paladins":"Furman","Arizona Wildcats":"Arizona",
-  "LIU Sharks":"LIU","Villanova Wildcats":"Villanova","Utah State Aggies":"Utah State",
-  "Wisconsin Badgers":"Wisconsin","High Point Panthers":"High Point","Arkansas Razorbacks":"Arkansas",
-  "Hawaii Rainbow Warriors":"Hawai'i","BYU Cougars":"BYU","SMU Mustangs":"SMU",
+  "North Dakota State Bison":"North Dakota St","UCLA Bruins":"UCLA",
+  "UCF Knights":"UCF","UConn Huskies":"UConn","Furman Paladins":"Furman",
+  // West
+  "Arizona Wildcats":"Arizona","LIU Sharks":"LIU",
+  "Long Island University Sharks":"LIU","Villanova Wildcats":"Villanova",
+  "Utah State Aggies":"Utah State","Wisconsin Badgers":"Wisconsin",
+  "High Point Panthers":"High Point","Arkansas Razorbacks":"Arkansas",
+  "Hawaii Rainbow Warriors":"Hawai'i","Hawai'i Rainbow Warriors":"Hawai'i",
+  "BYU Cougars":"BYU",
+  "SMU Mustangs":"Miami (OH) / SMU","Miami (OH) RedHawks":"Miami (OH) / SMU",
+  "Miami Ohio RedHawks":"Miami (OH) / SMU",
   "Gonzaga Bulldogs":"Gonzaga","Kennesaw State Owls":"Kennesaw State",
-  "Miami Hurricanes":"Miami (FL)","Missouri Tigers":"Missouri","Purdue Boilermakers":"Purdue",
-  "Queens Royals":"Queens","Michigan Wolverines":"Michigan","Howard Bison":"Howard",
+  "Miami Hurricanes":"Miami (FL)","Missouri Tigers":"Missouri",
+  "Purdue Boilermakers":"Purdue","Queens Royals":"Queens",
+  // Midwest
+  "Michigan Wolverines":"Michigan",
+  "Howard Bison":"Howard / UMBC","UMBC Retrievers":"Howard / UMBC",
   "Georgia Bulldogs":"Georgia","Saint Louis Billikens":"Saint Louis",
   "Vanderbilt Commodores":"Vanderbilt","McNeese Cowboys":"McNeese",
-  "Alabama Crimson Tide":"Alabama","Hofstra Pride":"Hofstra","Tennessee Volunteers":"Tennessee",
-  "Texas Longhorns":"Texas","Virginia Cavaliers":"Virginia","Wright State Raiders":"Wright State",
+  "Alabama Crimson Tide":"Alabama","Hofstra Pride":"Hofstra",
+  "Tennessee Volunteers":"Tennessee",
+  "Texas Longhorns":"Texas / NC State","NC State Wolfpack":"Texas / NC State",
+  "Virginia Cavaliers":"Virginia","Wright State Raiders":"Wright State",
   "Kentucky Wildcats":"Kentucky","Santa Clara Broncos":"Santa Clara",
   "Iowa State Cyclones":"Iowa State","Tennessee State Tigers":"Tennessee State",
-  "Florida Gators":"Florida","Lehigh Mountain Hawks":"Lehigh",
-  "Clemson Tigers":"Clemson","Iowa Hawkeyes":"Iowa","Texas Tech Red Raiders":"Texas Tech",
-  "Akron Zips":"Akron","Nebraska Cornhuskers":"Nebraska","Troy Trojans":"Troy",
+  // South
+  "Florida Gators":"Florida",
+  "Prairie View A&M Panthers":"PV A&M / Lehigh","Lehigh Mountain Hawks":"PV A&M / Lehigh",
+  "Clemson Tigers":"Clemson","Iowa Hawkeyes":"Iowa",
+  "Texas Tech Red Raiders":"Texas Tech","Akron Zips":"Akron",
+  "Nebraska Cornhuskers":"Nebraska","Troy Trojans":"Troy",
   "North Carolina Tar Heels":"North Carolina","VCU Rams":"VCU",
   "Illinois Fighting Illini":"Illinois","Penn Quakers":"Penn",
   "Saint Mary's Gaels":"Saint Mary's","Texas A&M Aggies":"Texas A&M",
   "Houston Cougars":"Houston","Idaho Vandals":"Idaho"
 };
 
-const ROUND_MAP = {"1":0,"2":1,"3":2,"4":3,"5":4,"6":5};
+// Try to match an ESPN team name
+function mapName(espnName) {
+  if (!espnName) return null;
+  if (NAME_MAP[espnName]) return NAME_MAP[espnName];
+  // Try matching just the display name without mascot
+  for (const [key, val] of Object.entries(NAME_MAP)) {
+    // Check if ESPN name starts with the same school name
+    const school = key.replace(/ (Blue Devils|Saints|Buckeyes|Horned Frogs|Red Storm|Panthers|Jayhawks|Lancers|Cardinals|Bulls|Spartans|Bison|Bruins|Knights|Huskies|Paladins|Wildcats|Sharks|Badgers|Razorbacks|Rainbow Warriors|Cougars|Mustangs|RedHawks|Bulldogs|Owls|Hurricanes|Tigers|Boilermakers|Royals|Wolverines|Retrievers|Billikens|Commodores|Cowboys|Crimson Tide|Pride|Volunteers|Longhorns|Wolfpack|Cavaliers|Raiders|Broncos|Cyclones|Gators|Mountain Hawks|Hawkeyes|Red Raiders|Zips|Cornhuskers|Trojans|Tar Heels|Rams|Fighting Illini|Quakers|Gaels|Aggies|Vandals)$/i, "").trim();
+    if (espnName.startsWith(school)) return val;
+  }
+  return null;
+}
 
-async function run() {
-  console.log("Fetching NCAA tournament scores...");
-  if (!DB_URL) { console.error("FIREBASE_DATABASE_URL not set"); process.exit(1); }
+// Figure out which round a game is based on the date and tournament schedule
+// 2026 NCAA Tournament schedule:
+// First Four: Mar 17-18
+// R64: Mar 19-20
+// R32: Mar 21-22
+// Sweet 16: Mar 26-27
+// Elite 8: Mar 28-29
+// Final Four: Apr 4
+// Championship: Apr 6
+function getRoundFromDate(dateStr) {
+  const d = parseInt(dateStr);
+  if (d <= 20260318) return -1;  // First Four — skip
+  if (d <= 20260320) return 0;   // R64
+  if (d <= 20260322) return 1;   // R32
+  if (d <= 20260327) return 2;   // Sweet 16
+  if (d <= 20260329) return 3;   // Elite 8
+  if (d <= 20260404) return 4;   // Final Four
+  if (d <= 20260406) return 5;   // Championship
+  return -1;
+}
 
+async function fetchScores() {
   const today = new Date();
   const dates = [];
-  for (let i = 3; i >= 0; i--) {
-    const d = new Date(today); d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().slice(0,10).replace(/-/g,""));
+  for (let i = 7; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10).replace(/-/g, ""));
   }
 
   const games = [];
   for (const date of dates) {
     try {
-      const url = "https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?dates="+date+"&groups=100&limit=200";
+      const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?dates=${date}&groups=100&limit=400`;
+      console.log(`📅 Checking ${date}...`);
       const res = await fetch(url);
       const data = await res.json();
-      if (!data.events) continue;
-      for (const ev of data.events) {
-        if (!ev.status?.type?.completed) continue;
-        const notes = (ev.notes||[]).map(n=>(n.headline||"").toLowerCase()).join(" ");
-        if (!notes.includes("ncaa") && !notes.includes("tournament")) continue;
-        const comps = ev.competitions?.[0]?.competitors||[];
-        if (comps.length!==2) continue;
-        const winner = comps.find(c=>c.winner);
-        const loser = comps.find(c=>!c.winner);
-        if (!winner||!loser) continue;
-        let round = null;
-        if (notes.includes("first round")||notes.includes("1st round")||notes.includes("round of 64")) round=1;
-        else if (notes.includes("second round")||notes.includes("2nd round")||notes.includes("round of 32")) round=2;
-        else if (notes.includes("sweet 16")||notes.includes("regional semi")) round=3;
-        else if (notes.includes("elite 8")||notes.includes("elite eight")||notes.includes("regional final")) round=4;
-        else if (notes.includes("final four")||notes.includes("national semi")) round=5;
-        else if (notes.includes("championship")||notes.includes("national champ")) round=6;
-        if (round) games.push({winner:winner.team?.displayName,loser:loser.team?.displayName,round});
+      if (!data.events) { console.log("   No events"); continue; }
+      console.log(`   ${data.events.length} total games found`);
+
+      for (const event of data.events) {
+        // Only completed games
+        if (!event.status?.type?.completed) continue;
+
+        const competitors = event.competitions?.[0]?.competitors || [];
+        if (competitors.length !== 2) continue;
+
+        const team1name = competitors[0]?.team?.displayName;
+        const team2name = competitors[1]?.team?.displayName;
+
+        // Check if EITHER team is in our bracket — that means it's a tournament game
+        const mapped1 = mapName(team1name);
+        const mapped2 = mapName(team2name);
+
+        if (!mapped1 && !mapped2) continue;  // Neither team is in our bracket
+
+        const winner = competitors.find(c => c.winner);
+        const loser = competitors.find(c => !c.winner);
+        if (!winner || !loser) continue;
+
+        const roundIdx = getRoundFromDate(date);
+
+        console.log(`   🏀 ${winner.team?.displayName} ${winner.score} - ${loser.team?.displayName} ${loser.score} (round: ${roundIdx})`);
+
+        games.push({
+          winner: winner.team?.displayName,
+          loser: loser.team?.displayName,
+          winScore: winner.score,
+          loseScore: loser.score,
+          round: roundIdx,
+          date
+        });
       }
-    } catch(e) { console.error("Error fetching "+date+":", e.message); }
+    } catch (err) {
+      console.error(`   Error: ${err.message}`);
+    }
+  }
+  return games;
+}
+
+async function main() {
+  console.log("🏀 NCAA Tournament Score Updater v2");
+  console.log("====================================\n");
+
+  if (!FIREBASE_DB_URL) {
+    console.error("❌ FIREBASE_DATABASE_URL not set!");
+    process.exit(1);
   }
 
-  console.log("Found "+games.length+" completed tournament games");
-  if (!games.length) return;
+  console.log("📥 Reading current results from Firebase...");
+  const resResp = await fetch(`${FIREBASE_DB_URL}/results.json`);
+  let results = await resResp.json() || {};
+  console.log(`   ${Object.keys(results).length} teams with existing results\n`);
 
-  const cur = await fetch(DB_URL+"/results.json").then(r=>r.json()) || {};
+  const games = await fetchScores();
+  console.log(`\n🏟️  Found ${games.length} tournament games\n`);
+
+  if (games.length === 0) {
+    console.log("No tournament games found. Done!");
+    return;
+  }
+
   let updates = 0;
+  const RN = ["R64","R32","Sweet 16","Elite 8","Final 4","Championship"];
 
-  for (const g of games) {
-    const ri = ROUND_MAP[String(g.round)];
-    if (ri===undefined) continue;
-    const wn = TEAM_NAMES[g.winner];
-    const ln = TEAM_NAMES[g.loser];
-    if (wn) { const a=cur[wn]||[]; if(a[ri]!=="Y"){a[ri]="Y";cur[wn]=a;updates++;console.log("  W "+wn);} }
-    if (ln) { const a=cur[ln]||[]; if(a[ri]!=="N"){a[ri]="N";cur[ln]=a;updates++;console.log("  L "+ln);} }
+  for (const game of games) {
+    if (game.round < 0) {
+      console.log(`  ⏭️  Skipping (First Four or out of range): ${game.winner} vs ${game.loser}`);
+      continue;
+    }
+
+    const winnerName = mapName(game.winner);
+    const loserName = mapName(game.loser);
+
+    if (winnerName) {
+      const arr = results[winnerName] || [];
+      if (arr[game.round] !== "Y") {
+        arr[game.round] = "Y";
+        results[winnerName] = arr;
+        console.log(`  ✅ ${winnerName} WIN in ${RN[game.round]} (${game.winScore}-${game.loseScore})`);
+        updates++;
+      }
+    }
+
+    if (loserName) {
+      const arr = results[loserName] || [];
+      if (arr[game.round] !== "N") {
+        arr[game.round] = "N";
+        results[loserName] = arr;
+        console.log(`  ❌ ${loserName} LOSS in ${RN[game.round]} (${game.loseScore}-${game.winScore})`);
+        updates++;
+      }
+    }
   }
 
   if (updates > 0) {
-    await fetch(DB_URL+"/results.json", {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(cur)});
-    console.log("Updated "+updates+" results in Firebase");
-  } else { console.log("No new updates"); }
+    console.log(`\n📝 Writing ${updates} updates to Firebase...`);
+    const wr = await fetch(`${FIREBASE_DB_URL}/results.json`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(results),
+    });
+    if (wr.ok) console.log("✅ Firebase updated! Scores are live.");
+    else console.error("❌ Write failed:", wr.status);
+  } else {
+    console.log("\n✅ Already up to date.");
+  }
 }
 
-run().catch(e => { console.error(e); process.exit(1); });
+main().catch(err => { console.error("Fatal:", err); process.exit(1); });
