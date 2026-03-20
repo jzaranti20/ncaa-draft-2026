@@ -51,7 +51,7 @@ const ESPN_KEYWORDS = {
   "Alabama Crimson Tide": ["alabama"],
   "Hofstra Pride": ["hofstra"],
   "Tennessee Volunteers": ["tennessee vol"],
-  "Texas Longhorns": ["texas long", "texas lo"],
+  "Texas Longhorns": ["texas long", "texas lo", "Texas"],
   "NC State Wolfpack": ["nc state"],
   "Virginia Cavaliers": ["virginia cav", "virginia"],
   "Wright State Raiders": ["wright state"],
