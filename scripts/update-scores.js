@@ -71,7 +71,7 @@ const ESPN_KEYWORDS = {
   "North Carolina Tar Heels": ["north carolina"],
   "VCU Rams": ["vcu"],
   "Illinois Fighting Illini": ["illinois"],
-  "Penn Quakers": ["penn qua", "penn"],
+  "Penn Quakers": ["penn qua", "Penn"],
   "Saint Mary's Gaels": ["saint mary"],
   "Texas A&M Aggies": ["texas a&m", "texas a&amp;m"],
   "Houston Cougars": ["houston"],
