@@ -60,7 +60,7 @@ const ESPN_KEYWORDS = {
   "Iowa State Cyclones": ["iowa state"],
   "Tennessee State Tigers": ["tennessee state"],
   "Florida Gators": ["florida gator", "florida"],
-  "Prairie View A&M Panthers": ["prairie view"],
+  "Prairie View A&M Panthers": ["prairie view", "PV A&M"],
   "Lehigh Mountain Hawks": ["lehigh"],
   "Clemson Tigers": ["clemson"],
   "Iowa Hawkeyes": ["iowa hawk", "iowa hawkeyes"],
