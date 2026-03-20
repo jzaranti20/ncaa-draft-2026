@@ -1,5 +1,9 @@
-// ESPN NCAA Tournament Score Fetcher v3
-// Fixes: strips trailing slash from URL, writes per-team, better errors
+// ESPN NCAA Tournament Score Fetcher v5
+// ESPN IS THE SOURCE OF TRUTH
+// - Fills in blanks for new games
+// - CORRECTS mistakes (if DB says W but ESPN says L, fixes it)
+// - Only skips First Four games
+// - Logs everything clearly
 
 let FIREBASE_DB_URL = (process.env.FIREBASE_DATABASE_URL || "").replace(/\/+$/, "");
 
@@ -54,20 +58,20 @@ function mapName(espnName) {
 
 function getRoundFromDate(dateStr) {
   const d = parseInt(dateStr);
-  if (d <= 20260318) return -1;
-  if (d <= 20260320) return 0;
-  if (d <= 20260322) return 1;
-  if (d <= 20260327) return 2;
-  if (d <= 20260329) return 3;
-  if (d <= 20260404) return 4;
-  if (d <= 20260406) return 5;
+  if (d <= 20260318) return -1;  // First Four
+  if (d <= 20260320) return 0;   // R64
+  if (d <= 20260322) return 1;   // R32
+  if (d <= 20260327) return 2;   // Sweet 16
+  if (d <= 20260329) return 3;   // Elite 8
+  if (d <= 20260404) return 4;   // Final Four
+  if (d <= 20260406) return 5;   // Championship
   return -1;
 }
 
 async function fetchScores() {
   const today = new Date();
   const dates = [];
-  for (let i = 7; i >= 0; i--) {
+  for (let i = 14; i >= 0; i--) {
     const d = new Date(today); d.setDate(d.getDate() - i);
     dates.push(d.toISOString().slice(0, 10).replace(/-/g, ""));
   }
@@ -79,7 +83,7 @@ async function fetchScores() {
       const res = await fetch(url);
       const data = await res.json();
       if (!data.events) { console.log("   No events"); continue; }
-      console.log(`   ${data.events.length} games on this date`);
+      let found = 0;
       for (const event of data.events) {
         if (!event.status?.type?.completed) continue;
         const competitors = event.competitions?.[0]?.competitors || [];
@@ -91,129 +95,120 @@ async function fetchScores() {
         const loser = competitors.find(c => !c.winner);
         if (!winner || !loser) continue;
         const roundIdx = getRoundFromDate(date);
-        console.log(`   🏀 ${winner.team?.displayName} ${winner.score} - ${loser.team?.displayName} ${loser.score} (round: ${roundIdx})`);
+        found++;
         games.push({ winner: winner.team?.displayName, loser: loser.team?.displayName, winScore: winner.score, loseScore: loser.score, round: roundIdx, date });
       }
+      if (found > 0) console.log(`   🏀 ${found} tournament games`);
     } catch (err) { console.error(`   Error: ${err.message}`); }
   }
   return games;
 }
 
-// Write a single team's results to Firebase
-async function writeTeamResult(teamName, resultArray) {
-  // Firebase keys can't have . $ # [ ] / so encode the team name
+async function writeOneResult(teamName, roundIdx, value) {
   const safeKey = encodeURIComponent(teamName).replace(/\./g, '%2E');
-  const url = `${FIREBASE_DB_URL}/results/${safeKey}.json`;
-  
-  // Convert array to object to avoid Firebase array issues
-  // e.g. {0: "Y"} instead of ["Y"]
-  const obj = {};
-  resultArray.forEach((v, i) => { if (v) obj[String(i)] = v; });
-  
+  const url = `${FIREBASE_DB_URL}/results/${safeKey}/${roundIdx}.json`;
   const res = await fetch(url, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(obj),
+    body: JSON.stringify(value),
   });
   if (!res.ok) {
     const body = await res.text();
-    console.error(`   ❌ Failed to write ${teamName}: ${res.status} - ${body}`);
+    console.error(`      ❌ Write failed for ${teamName} round ${roundIdx}: ${res.status} - ${body}`);
     return false;
   }
   return true;
 }
 
 async function main() {
-  console.log("🏀 NCAA Tournament Score Updater v3");
-  console.log("====================================\n");
-  console.log(`📡 Firebase URL: ${FIREBASE_DB_URL.substring(0, 30)}...`);
+  console.log("🏀 NCAA Tournament Score Updater v5");
+  console.log("====================================");
+  console.log("ESPN = SOURCE OF TRUTH");
+  console.log("Fills blanks + corrects mistakes\n");
 
   if (!FIREBASE_DB_URL) { console.error("❌ FIREBASE_DATABASE_URL not set!"); process.exit(1); }
 
-  // Test Firebase connection first
-  console.log("\n📥 Testing Firebase connection...");
-  try {
-    const testRes = await fetch(`${FIREBASE_DB_URL}/results.json`);
-    console.log(`   Connection status: ${testRes.status}`);
-    if (!testRes.ok) {
-      const body = await testRes.text();
-      console.error(`   ❌ Firebase read failed: ${body}`);
-      process.exit(1);
-    }
-  } catch (err) {
-    console.error(`   ❌ Cannot reach Firebase: ${err.message}`);
-    process.exit(1);
-  }
-
-  // Read current results
+  // Read current database
+  console.log("📥 Reading current results from Firebase...");
   const resResp = await fetch(`${FIREBASE_DB_URL}/results.json`);
+  if (!resResp.ok) { console.error("❌ Can't read Firebase:", resResp.status); process.exit(1); }
   let rawResults = await resResp.json() || {};
-  
-  // Convert Firebase objects back to arrays
-  let results = {};
+
+  // Convert to clean arrays
+  let dbResults = {};
   for (const [team, val] of Object.entries(rawResults)) {
-    const decodedTeam = decodeURIComponent(team);
+    const decoded = decodeURIComponent(team);
     if (Array.isArray(val)) {
-      results[decodedTeam] = val;
+      dbResults[decoded] = [...val];
     } else if (val && typeof val === "object") {
       const arr = [];
-      for (const [idx, v] of Object.entries(val)) { arr[parseInt(idx)] = v; }
-      results[decodedTeam] = arr;
+      for (const [idx, v] of Object.entries(val)) arr[parseInt(idx)] = v;
+      dbResults[decoded] = arr;
     }
   }
-  console.log(`   ${Object.keys(results).length} teams with existing results\n`);
 
+  const teamsWithResults = Object.entries(dbResults).filter(([_, a]) => a.some(v => v === "Y" || v === "N"));
+  console.log(`   ${teamsWithResults.length} teams have results in database\n`);
+
+  // Fetch ESPN games
   const games = await fetchScores();
-  console.log(`\n🏟️  Found ${games.length} tournament games\n`);
-  if (games.length === 0) { console.log("No games. Done!"); return; }
+  console.log(`\n🏟️  Found ${games.length} total tournament games from ESPN\n`);
+  if (games.length === 0) { console.log("No games found. Done!"); return; }
 
   const RN = ["R64", "R32", "Sweet 16", "Elite 8", "Final 4", "Championship"];
-  let updates = 0;
-  const toWrite = {};
+  let newWrites = 0, corrections = 0, alreadyCorrect = 0, skippedFF = 0;
 
   for (const game of games) {
-    if (game.round < 0) {
-      console.log(`  ⏭️  Skip First Four: ${game.winner} vs ${game.loser}`);
-      continue;
-    }
+    if (game.round < 0) { skippedFF++; continue; }
 
     const winnerName = mapName(game.winner);
     const loserName = mapName(game.loser);
 
+    // --- WINNER: should be "Y" in this round ---
     if (winnerName) {
-      const arr = results[winnerName] || [];
-      if (arr[game.round] !== "Y") {
-        arr[game.round] = "Y";
-        results[winnerName] = arr;
-        toWrite[winnerName] = arr;
-        console.log(`  ✅ ${winnerName} WIN in ${RN[game.round]} (${game.winScore}-${game.loseScore})`);
-        updates++;
+      const existing = (dbResults[winnerName] || [])[game.round];
+
+      if (existing === "Y") {
+        // Already correct, do nothing
+        alreadyCorrect++;
+      } else if (existing === "N") {
+        // DATABASE IS WRONG — says L but ESPN says W. Fix it.
+        console.log(`  🔧 CORRECTING ${winnerName} in ${RN[game.round]}: DB has L, ESPN says W (${game.winScore}-${game.loseScore})`);
+        const ok = await writeOneResult(winnerName, game.round, "Y");
+        if (ok) corrections++;
+      } else {
+        // Blank — new result
+        console.log(`  ✅ NEW: ${winnerName} WIN in ${RN[game.round]} (${game.winScore}-${game.loseScore})`);
+        const ok = await writeOneResult(winnerName, game.round, "Y");
+        if (ok) newWrites++;
       }
     }
+
+    // --- LOSER: should be "N" in this round ---
     if (loserName) {
-      const arr = results[loserName] || [];
-      if (arr[game.round] !== "N") {
-        arr[game.round] = "N";
-        results[loserName] = arr;
-        toWrite[loserName] = arr;
-        console.log(`  ❌ ${loserName} LOSS in ${RN[game.round]} (${game.loseScore}-${game.winScore})`);
-        updates++;
+      const existing = (dbResults[loserName] || [])[game.round];
+
+      if (existing === "N") {
+        alreadyCorrect++;
+      } else if (existing === "Y") {
+        // DATABASE IS WRONG — says W but ESPN says L. Fix it.
+        console.log(`  🔧 CORRECTING ${loserName} in ${RN[game.round]}: DB has W, ESPN says L (${game.loseScore}-${game.winScore})`);
+        const ok = await writeOneResult(loserName, game.round, "N");
+        if (ok) corrections++;
+      } else {
+        console.log(`  ❌ NEW: ${loserName} LOSS in ${RN[game.round]} (${game.loseScore}-${game.winScore})`);
+        const ok = await writeOneResult(loserName, game.round, "N");
+        if (ok) newWrites++;
       }
     }
   }
 
-  if (updates > 0) {
-    console.log(`\n📝 Writing ${updates} updates to Firebase (one team at a time)...\n`);
-    let success = 0, fail = 0;
-    for (const [team, arr] of Object.entries(toWrite)) {
-      const ok = await writeTeamResult(team, arr);
-      if (ok) { success++; console.log(`   ✅ Wrote ${team}`); }
-      else fail++;
-    }
-    console.log(`\n🏁 Done: ${success} written, ${fail} failed`);
-  } else {
-    console.log("\n✅ Already up to date.");
-  }
+  console.log(`\n🏁 SUMMARY`);
+  console.log(`   ✅ ${newWrites} new results written`);
+  console.log(`   🔧 ${corrections} corrections made (DB was wrong)`);
+  console.log(`   ✓  ${alreadyCorrect} already correct (no change)`);
+  console.log(`   ⏭️  ${skippedFF} First Four games skipped`);
+  console.log(`\nDone!`);
 }
 
 main().catch(err => { console.error("Fatal:", err); process.exit(1); });
