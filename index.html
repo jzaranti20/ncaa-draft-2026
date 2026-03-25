@@ -61,16 +61,17 @@ const ADMIN_CODE="MADNESS2026";
 const BRACKET={
   East:[{s:1,n:"Duke"},{s:16,n:"Siena"},{s:8,n:"Ohio State"},{s:9,n:"TCU"},{s:5,n:"St. John's"},{s:12,n:"Northern Iowa"},{s:4,n:"Kansas"},{s:13,n:"Cal Baptist"},{s:6,n:"Louisville"},{s:11,n:"South Florida"},{s:3,n:"Michigan State"},{s:14,n:"North Dakota St"},{s:7,n:"UCLA"},{s:10,n:"UCF"},{s:2,n:"UConn"},{s:15,n:"Furman"}],
   West:[{s:1,n:"Arizona"},{s:16,n:"LIU"},{s:8,n:"Villanova"},{s:9,n:"Utah State"},{s:5,n:"Wisconsin"},{s:12,n:"High Point"},{s:4,n:"Arkansas"},{s:13,n:"Hawai'i"},{s:6,n:"BYU"},{s:11,n:"Miami (OH) / SMU"},{s:3,n:"Gonzaga"},{s:14,n:"Kennesaw State"},{s:7,n:"Miami (FL)"},{s:10,n:"Missouri"},{s:2,n:"Purdue"},{s:15,n:"Queens"}],
-  Midwest:[{s:1,n:"Michigan"},{s:16,n:"Howard"},{s:8,n:"Georgia"},{s:9,n:"Saint Louis"},{s:5,n:"Vanderbilt"},{s:12,n:"McNeese"},{s:4,n:"Alabama"},{s:13,n:"Hofstra"},{s:6,n:"Tennessee"},{s:11,n:"Texas"},{s:3,n:"Virginia"},{s:14,n:"Wright State"},{s:7,n:"Kentucky"},{s:10,n:"Santa Clara"},{s:2,n:"Iowa State"},{s:15,n:"Tennessee State"}],
-  South:[{s:1,n:"Florida"},{s:16,n:"PV A&M"},{s:8,n:"Clemson"},{s:9,n:"Iowa"},{s:5,n:"Texas Tech"},{s:12,n:"Akron"},{s:4,n:"Nebraska"},{s:13,n:"Troy"},{s:6,n:"North Carolina"},{s:11,n:"VCU"},{s:3,n:"Illinois"},{s:14,n:"Penn"},{s:7,n:"Saint Mary's"},{s:10,n:"Texas A&M"},{s:2,n:"Houston"},{s:15,n:"Idaho"}]
+  Midwest:[{s:1,n:"Michigan"},{s:16,n:"Howard / UMBC"},{s:8,n:"Georgia"},{s:9,n:"Saint Louis"},{s:5,n:"Vanderbilt"},{s:12,n:"McNeese"},{s:4,n:"Alabama"},{s:13,n:"Hofstra"},{s:6,n:"Tennessee"},{s:11,n:"Texas / NC State"},{s:3,n:"Virginia"},{s:14,n:"Wright State"},{s:7,n:"Kentucky"},{s:10,n:"Santa Clara"},{s:2,n:"Iowa State"},{s:15,n:"Tennessee State"}],
+  South:[{s:1,n:"Florida"},{s:16,n:"PV A&M / Lehigh"},{s:8,n:"Clemson"},{s:9,n:"Iowa"},{s:5,n:"Texas Tech"},{s:12,n:"Akron"},{s:4,n:"Nebraska"},{s:13,n:"Troy"},{s:6,n:"North Carolina"},{s:11,n:"VCU"},{s:3,n:"Illinois"},{s:14,n:"Penn"},{s:7,n:"Saint Mary's"},{s:10,n:"Texas A&M"},{s:2,n:"Houston"},{s:15,n:"Idaho"}]
 };
 const T=[];for(const[r,ts]of Object.entries(BRACKET))for(const t of ts)T.push({seed:t.s,name:t.n,region:r});
-const RN=["R64","R32","Sweet 16","Elite 8","Final 4","Championship"],RP=[1,1,1,1,1,1];
+const RN=["R64","R32","Sweet 16","Elite 8","Final 4","Championship"],RP=[1,2,4,8,16,32];
 const RC={East:"#e94560",West:"#48cae4",Midwest:"#ffd166",South:"#52b788"};
 const PP=[{b:"#1a1a2e",a:"#e94560"},{b:"#0d1b2a",a:"#48cae4"},{b:"#1b2e1a",a:"#52b788"},{b:"#2e1a1a",a:"#f4845f"},{b:"#2e2a1a",a:"#ffd166"},{b:"#1a1a2e",a:"#7b68ee"},{b:"#2e1a2a",a:"#e07aff"},{b:"#1a2e2e",a:"#00bfa5"},{b:"#2e2020",a:"#ff6b9d"},{b:"#1a2020",a:"#20c997"}];
 
 let S={ph:"loading",pl:[],pk:[],rs:{},sr:"",vw:"standings",sp:null,fr:"All",sn:"John\nTony\nGriff\nRoss\nLito\nPat\nAndrew\nJordan",sf:null,sg:false,mr:false,rc:"",re:false};
 function ss(u){Object.assign(S,u);render();}
+function sk(n){return n.replace(/[.']/g,'').replace(/\//g,'-');}
 
 db.ref("draft").on("value",snap=>{
   const d=snap.val();
@@ -81,10 +82,10 @@ db.ref("draft").on("value",snap=>{
 db.ref("results").on("value",snap=>{const d=snap.val();if(d)ss({rs:d});});
 
 function gpp(i,p){const n=p.length,r=Math.floor(i/n),pos=i%n;return p[r%2===0?pos:n-1-pos];}
-function gtp(t){const r=S.rs[t]||[];let p=0;r.forEach((v,i)=>{if(v==="Y")p+=RP[i];});return p;}
+function gtp(t){const r=S.rs[sk(t)]||[];let p=0;r.forEach((v,i)=>{if(v==="Y")p+=RP[i];});return p;}
 function gpd(nm){
   const teams=S.pk.filter(p=>p.player===nm);let pts=0,w=0,al=0,br=-1,bt=null;
-  teams.forEach(({team})=>{const r=S.rs[team]||[];r.forEach((v,i)=>{if(v==="Y"){pts+=RP[i];w++;}});
+  teams.forEach(({team})=>{const r=S.rs[sk(team)]||[];r.forEach((v,i)=>{if(v==="Y"){pts+=RP[i];w++;}});
     const lw=r.lastIndexOf("Y");if(lw>br){br=lw;bt=team;}
     if(!r.includes("N")&&r.filter(v=>v==="Y").length<6)al++;});
   return{teams,pts,w,al,br,bt};
@@ -93,7 +94,7 @@ function gst(){return S.pl.map((nm,i)=>({nm,c:PP[i%PP.length],...gpd(nm)})).sort
 
 function dp(tn){const pl=gpp(S.pk.length,S.pl);db.ref("draft").set({players:S.pl,picks:[...S.pk,{pick:S.pk.length+1,player:pl,team:tn}]});}
 function undo(){if(S.pk.length>0)db.ref("draft").set({players:S.pl,picks:S.pk.slice(0,-1)});}
-function sres(t,ri,v){const a=[...(S.rs[t]||[])];a[ri]=v;if(v==="N")for(let i=ri+1;i<6;i++)a[i]=null;db.ref("results").set({...S.rs,[t]:a});}
+function sres(t,ri,v){const key=sk(t);const a=[...(S.rs[key]||[])];a[ri]=v;if(v==="N")for(let i=ri+1;i<6;i++)a[i]=null;db.ref("results").set({...S.rs,[key]:a});}
 function doreset(){if(S.rc!==ADMIN_CODE){ss({re:true});return;}db.ref("draft").set(null);db.ref("results").set(null);ss({ph:"setup",pl:[],pk:[],rs:{},mr:false,rc:"",re:false,sp:null,sf:null});}
 function shuf(){
   const names=S.sn.split("\n").map(n=>n.trim()).filter(Boolean);if(names.length<2)return;
@@ -243,7 +244,7 @@ function render(){
       h("div",{style:{textAlign:"right"}},h("div",{style:{fontSize:"48px",fontFamily:"'Bebas Neue'",color:"#fff",lineHeight:"1"}},String(p.pts)),h("div",{style:{fontSize:"12px",fontFamily:"'Barlow'",color:"#555"}},"TOTAL POINTS"))));
     const tbl=h("table",null),thd=h("thead",null,h("tr",null,h("th",{style:{width:"40px"}},"Pick"),h("th",{style:{textAlign:"left"}},"Team"),h("th",{style:{width:"50px"}},"Seed"),h("th",{style:{textAlign:"left"}},"Region"),...RN.map(r=>h("th",null,r)),h("th",null,"PTS")));
     tbl.appendChild(thd);const tbd=h("tbody",null);
-    p.teams.forEach(({pick,team})=>{const info=T.find(t=>t.name===team),pts=gtp(team),r=S.rs[team]||[];
+    p.teams.forEach(({pick,team})=>{const info=T.find(t=>t.name===team),pts=gtp(team),r=S.rs[sk(team)]||[];
       tbd.appendChild(h("tr",{style:{borderBottom:"1px solid rgba(255,255,255,0.04)"}},
         h("td",{style:{color:"#555",textAlign:"center"}},String(pick)),h("td",{style:{fontWeight:"600"}},team),
         h("td",{style:{textAlign:"center",color:info?RC[info.region]:"#888"}},String(info?.seed||"")),
@@ -264,7 +265,7 @@ function render(){
     const tbl=h("table",null);tbl.appendChild(h("thead",null,h("tr",null,h("th",{style:{textAlign:"left"}},"Team"),h("th",{style:{width:"60px"}},"Seed"),h("th",{style:{textAlign:"left"}},"Owner"),...RN.map(r=>h("th",{style:{width:"80px"}},r)))));
     const tbd=h("tbody",null);
     T.filter(t=>S.fr==="All"||t.region===S.fr).sort((a,b)=>a.seed-b.seed).forEach(team=>{
-      const ow=S.pk.find(p=>p.team===team.name),oi=ow?S.pl.indexOf(ow.player):-1,oc=oi>=0?PP[oi%PP.length]:null,r=S.rs[team.name]||[];
+      const ow=S.pk.find(p=>p.team===team.name),oi=ow?S.pl.indexOf(ow.player):-1,oc=oi>=0?PP[oi%PP.length]:null,r=S.rs[sk(team.name)]||[];
       tbd.appendChild(h("tr",{style:{borderBottom:"1px solid rgba(255,255,255,0.04)"}},
         h("td",{style:{fontWeight:"600"}},h("span",{style:{color:RC[team.region],marginRight:"6px",fontSize:"10px",opacity:"0.5"}},"●"),team.name),
         h("td",{style:{textAlign:"center",color:RC[team.region]}},String(team.seed)),
@@ -290,7 +291,7 @@ function render(){
         ...(sn?[h("span",{style:{fontSize:"9px",color:"#e94560",fontFamily:"'Barlow'",padding:"1px 5px",border:"1px solid #e9456033"}},"↩")]:[]),
         h("div",{style:{flex:"1",height:"1px",background:"rgba(255,255,255,0.04)"}})));
       const gr=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(130px,1fr))",gap:"4px",marginBottom:"12px"}});
-      disp.forEach(p=>{const pi=S.pl.indexOf(p.player),pc=PP[pi%PP.length],info=T.find(t=>t.name===p.team),r=S.rs[p.team]||[],el=r.includes("N"),al=!el&&r.filter(v=>v==="Y").length>0;
+      disp.forEach(p=>{const pi=S.pl.indexOf(p.player),pc=PP[pi%PP.length],info=T.find(t=>t.name===p.team),r=S.rs[sk(p.team)]||[],el=r.includes("N"),al=!el&&r.filter(v=>v==="Y").length>0;
         gr.appendChild(h("div",{style:{padding:"8px 10px",background:el?"#0a0a0f":pc.b,border:`1px solid ${al?pc.a+"66":"rgba(255,255,255,0.04)"}`,opacity:el?"0.4":"1",position:"relative"}},
           h("div",{style:{fontSize:"9px",fontFamily:"'Barlow'",color:"#444"}},`#${p.pick}`),
           h("div",{style:{fontSize:"13px",fontFamily:"'Barlow Condensed'",fontWeight:"700",color:el?"#444":"#e8e6e3",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},p.team),
