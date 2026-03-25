@@ -9,7 +9,7 @@ const ESPN_KEYWORDS = {
   "Siena Saints": ["siena"],
   "Ohio State Buckeyes": ["ohio state"],
   "TCU Horned Frogs": ["tcu"],
-  "St. John's Red Storm": ["st. john", "st john","St. John's"],
+  "St. John's Red Storm": ["st. john", "st john"],
   "Northern Iowa Panthers": ["northern iowa"],
   "Kansas Jayhawks": ["kansas"],
   "Cal Baptist Lancers": ["cal baptist"],
@@ -34,7 +34,7 @@ const ESPN_KEYWORDS = {
   "BYU Cougars": ["byu"],
   "SMU Mustangs": ["smu"],
   "Miami (OH) RedHawks": ["miami (oh)"],
-  "Miami Ohio RedHawks": ["miami (oh)", "miami oh","Miami (OH) / SMU"],
+  "Miami Ohio RedHawks": ["miami (oh)", "miami oh"],
   "Gonzaga Bulldogs": ["gonzaga"],
   "Kennesaw State Owls": ["kennesaw"],
   "Miami Hurricanes": ["miami (fl)"],
@@ -51,7 +51,7 @@ const ESPN_KEYWORDS = {
   "Alabama Crimson Tide": ["alabama"],
   "Hofstra Pride": ["hofstra"],
   "Tennessee Volunteers": ["tennessee vol"],
-  "Texas Longhorns": ["texas long", "texas lo", "Texas"],
+  "Texas Longhorns": ["texas long", "texas lo"],
   "NC State Wolfpack": ["nc state"],
   "Virginia Cavaliers": ["virginia cav", "virginia"],
   "Wright State Raiders": ["wright state"],
@@ -60,7 +60,7 @@ const ESPN_KEYWORDS = {
   "Iowa State Cyclones": ["iowa state"],
   "Tennessee State Tigers": ["tennessee state"],
   "Florida Gators": ["florida gator", "florida"],
-  "Prairie View A&M Panthers": ["prairie view", "PV A&M"],
+  "Prairie View A&M Panthers": ["prairie view"],
   "Lehigh Mountain Hawks": ["lehigh"],
   "Clemson Tigers": ["clemson"],
   "Iowa Hawkeyes": ["iowa hawk", "iowa hawkeyes"],
@@ -71,7 +71,7 @@ const ESPN_KEYWORDS = {
   "North Carolina Tar Heels": ["north carolina"],
   "VCU Rams": ["vcu"],
   "Illinois Fighting Illini": ["illinois"],
-  "Penn Quakers": ["penn qua", "Penn"],
+  "Penn Quakers": ["penn qua", "penn"],
   "Saint Mary's Gaels": ["saint mary"],
   "Texas A&M Aggies": ["texas a&m", "texas a&amp;m"],
   "Houston Cougars": ["houston"],
@@ -186,9 +186,12 @@ async function fetchScores() {
   return games;
 }
 
+// Same safe-key function as the app — MUST match exactly
+function sk(n) { return n.replace(/[.']/g, '').replace(/\//g, '-'); }
+
 async function writeOneResult(teamName, roundIdx, value) {
-  const safeKey = encodeURIComponent(teamName).replace(/\./g, '%2E');
-  const url = `${FIREBASE_DB_URL}/results/${safeKey}/${roundIdx}.json`;
+  const safeKey = sk(teamName);
+  const url = `${FIREBASE_DB_URL}/results/${encodeURIComponent(safeKey)}/${roundIdx}.json`;
   const res = await fetch(url, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -272,7 +275,7 @@ async function main() {
 
     // WINNER
     if (winnerName) {
-      const existing = (dbResults[winnerName] || [])[game.round];
+      const existing = (dbResults[sk(winnerName)] || [])[game.round];
       if (existing === "Y") { alreadyCorrect++; }
       else if (existing === "N") {
         console.log(`  🔧 FIX ${winnerName} ${RN[game.round]}: DB=L → ESPN=W (${game.winScore}-${game.loseScore})`);
@@ -285,7 +288,7 @@ async function main() {
 
     // LOSER
     if (loserName) {
-      const existing = (dbResults[loserName] || [])[game.round];
+      const existing = (dbResults[sk(loserName)] || [])[game.round];
       if (existing === "N") { alreadyCorrect++; }
       else if (existing === "Y") {
         console.log(`  🔧 FIX ${loserName} ${RN[game.round]}: DB=W → ESPN=L (${game.loseScore}-${game.winScore})`);
